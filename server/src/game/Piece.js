@@ -6,10 +6,6 @@ export default class Piece {
     this.position = { x: Math.floor((10 - this.matrix[0].length) / 2), y: 0 };
   }
 
-  setRotation(rotation) {
-    this.rotation = rotation % 4;
-  }
-
   move(dx, dy) {
     this.position.x += dx;
     this.position.y += dy;
