@@ -1,19 +1,18 @@
 export default function clearLines(board) {
   const width = board[0].length;
-  const rowsRemoved = [];
-  const remaining = [];
+  const clearedRowIndexes = [];
+  const remainingRows = [];
   for (let r = 0; r < board.length; r++) {
     const isFull = board[r].every((cell) => cell !== 0);
-    if (isFull && board[r][0] !== "X") rowsRemoved.push(r);
-    else remaining.push(board[r]);
+    if (isFull && board[r][0] !== "X") clearedRowIndexes.push(r);
+    else remainingRows.push(board[r]);
   }
-  const newRows = Array.from({ length: rowsRemoved.length }, () =>
-    Array(width).fill(0)
+  const newRows = Array.from({ length: clearedRowIndexes.length }, () =>
+    Array(width).fill(0),
   );
-  const newBoard = [...newRows, ...remaining];
+  const newBoard = [...newRows, ...remainingRows];
   return {
-    board: newBoard,
-    linesCleared: rowsRemoved.length,
-    rowsRemoved: rowsRemoved,
+    newBoard,
+    linesCleared: clearedRowIndexes.length,
   };
 }

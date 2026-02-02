@@ -80,7 +80,7 @@ export default class Game {
 
     // clear lines
     const result = clearLines(newBoard);
-    player.setBoard(result.board);
+    player.setBoard(result.newBoard);
     if (result.linesCleared > 0) {
       // handle line clear
       this.handleLineClear(player.id, result.linesCleared);
