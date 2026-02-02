@@ -1,10 +1,10 @@
-export default function isValidPosition(matrix, board, offsetX, offsetY) {
-  for (let y = 0; y < matrix.length; y++) {
-    for (let x = 0; x < matrix[y].length; x++) {
-      if (matrix[y][x] === 0) continue;
+export default function isValidPosition(board, piece) {
+  for (let y = 0; y < piece.matrix.length; y++) {
+    for (let x = 0; x < piece.matrix[y].length; x++) {
+      if (piece.matrix[y][x] === 0) continue;
 
-      const newX = x + offsetX;
-      const newY = y + offsetY;
+      const newX = x + piece.position.x;
+      const newY = y + piece.position.y;
 
       // Out of bounds check
       if (newX < 0 || newX >= 10) return false;

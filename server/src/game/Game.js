@@ -46,28 +46,14 @@ export default class Game {
         newPiece = move(piece, 0, 1);
         break;
       case "hardDrop":
-        while (
-          isValidPosition(
-            test.matrix,
-            player.board,
-            test.position.x,
-            test.position.y + 1,
-          )
-        ) {
+        while (isValidPosition(player.board, move(test, 0, 1))) {
           piece.move(0, 1);
           test.move(0, 1);
         }
         return this.lockCurrentPiece(player, io);
     }
 
-    if (
-      isValidPosition(
-        newPiece.matrix,
-        player.board,
-        newPiece.position.x,
-        newPiece.position.y,
-      )
-    ) {
+    if (isValidPosition(player.board, newPiece)) {
       player.setPiece(newPiece);
     }
   }
@@ -81,14 +67,7 @@ export default class Game {
       const test = player.currentPiece.clone();
       test.move(0, 1);
 
-      if (
-        isValidPosition(
-          test.matrix,
-          player.board,
-          test.position.x,
-          test.position.y,
-        )
-      ) {
+      if (isValidPosition(player.board, test)) {
         player.currentPiece.move(0, 1);
       } else {
         this.lockCurrentPiece(player, io);
@@ -117,14 +96,7 @@ export default class Game {
     // Spaw next pice
     player.clearPiece();
     const piece = this.spawnPieceForAll();
-    if (
-      !isValidPosition(
-        piece.matrix,
-        player.board,
-        piece.position.x,
-        piece.position.y,
-      )
-    ) {
+    if (!isValidPosition(player.board, piece)) {
       this.killPlayer(player.id, io);
       return -1;
       // player.clearPiece();
