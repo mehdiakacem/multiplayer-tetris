@@ -1,6 +1,7 @@
 import Piece from "./Piece.js";
 import { addGarbageLines } from "./logic/addGarbageLines.js";
 import clearLines from "./logic/clearLines.js";
+import createBoard from "./logic/createBoard.js";
 import hardDrop from "./logic/hardDrop.js";
 import isValidPosition from "./logic/isValidPosition.js";
 import lockPiece from "./logic/lockPiece.js";
@@ -180,7 +181,7 @@ export default class Game {
   resetPlayers() {
     this.players.forEach((player) => {
       player.alive = true;
-      player.setBoard(player.createEmptyBoard());
+      player.setBoard(createBoard());
       player.pendingPenaltyLines = 0;
       player.queue = [];
       player.clearPiece();
@@ -205,7 +206,7 @@ export default class Game {
     const type = this.getNextPiece();
     this.players.forEach((player) => {
       if (player.alive) {
-        player.spawnPiece(type);
+        player.givePiece(type);
       }
     });
     return new Piece(type);
