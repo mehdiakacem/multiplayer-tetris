@@ -43,7 +43,7 @@ export function registerSocketHandlers(io, gameManager) {
       const game = gameManager.getGame(currentRoom);
       if (game.started) {
         let result = game.handleInput(socket.id, action, io);
-        if  (result !== -1)
+        if (result !== -1)
           socket.emit("game-tick", { game: game.getPublicState() });
       }
     });

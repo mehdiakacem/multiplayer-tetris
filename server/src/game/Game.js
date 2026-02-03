@@ -1,6 +1,7 @@
 import Piece from "./Piece.js";
 import { addGarbageLines } from "./logic/addGarbageLines.js";
 import clearLines from "./logic/clearLines.js";
+import hardDrop from "./logic/hardDrop.js";
 import isValidPosition from "./logic/isValidPosition.js";
 import lockPiece from "./logic/lockPiece.js";
 import move from "./logic/move.js";
@@ -29,7 +30,6 @@ export default class Game {
     const piece = player.currentPiece;
     if (!piece) return;
 
-    const test = piece.clone();
     let newPiece;
 
     switch (action) {
@@ -46,33 +46,33 @@ export default class Game {
         newPiece = move(piece, 0, 1);
         break;
       case "hardDrop":
-        while (isValidPosition(player.board, move(test, 0, 1))) {
-          piece.move(0, 1);
-          test.move(0, 1);
+        const droppedPiece = hardDrop(player.board, piece, isValidPosition);
+
+        const boardWithLockedPiece = lockPiece(player.board, droppedPiece);
+
+        const { linesCleared, newBoard: boardWithClearedLines } =
+          clearLines(boardWithLockedPiece);
+
+        this.handleLineClear(player.id, linesCleared);
+
+        const penalties = player.consumePenaltyLines();
+        const newBoard = addGarbageLines(boardWithClearedLines, penalties);
+        player.setBoard(newBoard);
+        player.clearPiece();
+        newPiece = this.spawnPieceForAll();
+        if (!isValidPosition(player.board, newPiece)) {
+          this.killPlayer(player.id, io);
+          return -1;
         }
-        return this.lockCurrentPiece(player, io);
+        return;
+        break;
+      default:
+        return;
     }
 
     if (isValidPosition(player.board, newPiece)) {
       player.setPiece(newPiece);
     }
-  }
-
-  tick(io) {
-    if (!this.started || this.ended) return;
-
-    this.players.forEach((player) => {
-      if (!player.alive || !player.currentPiece) return;
-
-      const test = player.currentPiece.clone();
-      test.move(0, 1);
-
-      if (isValidPosition(player.board, test)) {
-        player.currentPiece.move(0, 1);
-      } else {
-        this.lockCurrentPiece(player, io);
-      }
-    });
   }
 
   lockCurrentPiece(player, io) {
@@ -113,6 +113,23 @@ export default class Game {
     this.players.forEach((player, id) => {
       if (id !== clearingPlayerId && player.alive) {
         player.addPenaltyLines(penalty);
+      }
+    });
+  }
+
+  tick(io) {
+    if (!this.started || this.ended) return;
+
+    this.players.forEach((player) => {
+      if (!player.alive || !player.currentPiece) return;
+
+      const test = player.currentPiece.clone();
+      test.move(0, 1);
+
+      if (isValidPosition(player.board, test)) {
+        player.currentPiece.move(0, 1);
+      } else {
+        this.lockCurrentPiece(player, io);
       }
     });
   }

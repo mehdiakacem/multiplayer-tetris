@@ -15,14 +15,6 @@ export default class Piece {
     this.position = { x, y };
   }
 
-  // getBlocks() {
-  //   const shape = SHAPES[this.type][this.rotation];
-  //   return shape.map(([x, y]) => ({
-  //     x: this.position.x + x,
-  //     y: this.position.y + y,
-  //   }));
-  // }
-
   clone() {
     const copy = new Piece(this.type);
     copy.rotation = this.rotation;
