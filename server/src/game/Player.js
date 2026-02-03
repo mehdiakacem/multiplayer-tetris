@@ -37,10 +37,6 @@ export default class Player {
     this.currentPiece = piece;
   }
 
-  getSpectrum() {
-    return this.spectrum;
-  }
-
   addPenaltyLines(count) {
     this.pendingPenaltyLines += count;
   }
