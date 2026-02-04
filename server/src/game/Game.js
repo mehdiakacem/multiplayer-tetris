@@ -24,52 +24,58 @@ export default class Game {
     this.bagIndex = 0;
   }
 
-  handleInput(playerId, action, io) {
-    const player = this.players.get(playerId);
-    if (!player || !player.alive) return;
-
-    const piece = player.currentPiece;
-    if (!piece) return;
-
-    let newPiece;
-
+  computeMove(piece, action) {
     switch (action) {
       case "left":
-        newPiece = move(piece, -1, 0);
-        break;
+        return move(piece, -1, 0);
       case "right":
-        newPiece = move(piece, 1, 0);
-        break;
+        return move(piece, 1, 0);
       case "rotate":
-        newPiece = rotate(piece);
-        break;
+        return rotate(piece);
       case "down":
-        newPiece = move(piece, 0, 1);
-        break;
-      case "hardDrop":
-        const droppedPiece = hardDrop(player.board, piece, isValidPosition);
-
-        const boardWithLockedPiece = lockPiece(player.board, droppedPiece);
-
-        const { linesCleared, newBoard: boardWithClearedLines } =
-          clearLines(boardWithLockedPiece);
-
-        this.handleLineClear(player.id, linesCleared);
-
-        const penalties = player.consumePenaltyLines();
-        const newBoard = addGarbageLines(boardWithClearedLines, penalties);
-        player.setBoard(newBoard);
-        player.clearPiece();
-        newPiece = this.spawnPieceForAll();
-        if (!isValidPosition(player.board, newPiece)) {
-          this.killPlayer(player.id, io);
-          return -1;
-        }
-        return;
-        break;
+        return move(piece, 0, 1);
       default:
-        return;
+        return null;
     }
+  }
+
+  handleHardDrop(player, io) {
+    const droppedPiece = hardDrop(
+      player.board,
+      player.currentPiece,
+      isValidPosition,
+    );
+
+    const boardWithLockedPiece = lockPiece(player.board, droppedPiece);
+
+    const { linesCleared, newBoard } = clearLines(boardWithLockedPiece);
+
+    this.handleLineClear(player.id, linesCleared);
+
+    const penalties = player.consumePenaltyLines();
+    const finalBoard = addGarbageLines(newBoard, penalties);
+
+    player.setBoard(finalBoard);
+    player.clearPiece();
+
+    const newPiece = this.spawnPieceForAll();
+
+    if (!isValidPosition(player.board, newPiece)) {
+      this.killPlayer(player.id, io);
+      return -1;
+    }
+  }
+
+  handleInput(playerId, action, io) {
+    const player = this.players.get(playerId);
+    if (!player || !player.alive || !player.currentPiece) return;
+
+    if (action === "hardDrop") {
+      return this.handleHardDrop(player, io);
+    }
+
+    const newPiece = this.computeMove(player.currentPiece, action);
+    if (!newPiece) return;
 
     if (isValidPosition(player.board, newPiece)) {
       player.setPiece(newPiece);
@@ -102,20 +108,6 @@ export default class Game {
       return -1;
       // player.clearPiece();
     }
-  }
-
-  handleLineClear(clearingPlayerId, linesCleared) {
-    if (linesCleared <= 0) return;
-
-    const penalty = linesCleared - 1;
-
-    if (penalty <= 0) return;
-
-    this.players.forEach((player, id) => {
-      if (id !== clearingPlayerId && player.alive) {
-        player.addPenaltyLines(penalty);
-      }
-    });
   }
 
   tick(io) {
