@@ -61,17 +61,18 @@ export default class Game {
     const newPiece = this.spawnPieceForAll();
 
     if (!isValidPosition(player.board, newPiece)) {
-      this.killPlayer(player.id, io);
+      this.killPlayer(player.id);
       return -1;
     }
   }
 
-  handleInput(playerId, action, io) {
+  handleInput(playerId, action) {
     const player = this.players.get(playerId);
     if (!player || !player.alive || !player.currentPiece) return;
 
     if (action === "hardDrop") {
-      return this.handleHardDrop(player, io);
+      this.handleHardDrop(player);
+      return;
     }
 
     const newPiece = this.computeMove(player.currentPiece, action);
@@ -104,13 +105,12 @@ export default class Game {
     player.clearPiece();
     const piece = this.spawnPieceForAll();
     if (!isValidPosition(player.board, piece)) {
-      this.killPlayer(player.id, io);
-      return -1;
+      this.killPlayer(player.id);
       // player.clearPiece();
     }
   }
 
-  tick(io) {
+  tick() {
     if (!this.started || this.ended) return;
 
     this.players.forEach((player) => {
@@ -122,7 +122,7 @@ export default class Game {
       if (isValidPosition(player.board, test)) {
         player.currentPiece.move(0, 1);
       } else {
-        this.lockCurrentPiece(player, io);
+        this.lockCurrentPiece(player);
       }
     });
   }
@@ -164,10 +164,9 @@ export default class Game {
     return true;
   }
 
-  endedGame(io) {
+  endGame() {
     this.started = false;
     this.ended = true;
-    io.to(this.room).emit("game-over", { game: this.getPublicState() });
   }
 
   resetPlayers() {
@@ -227,7 +226,7 @@ export default class Game {
     const alivePlayers = [...this.players.values()].filter((p) => p.alive);
 
     if (alivePlayers.length <= 1) {
-      this.endedGame(io);
+      this.endGame();
     }
   }
 
