@@ -1,4 +1,3 @@
-import Piece from "./Piece.js";
 import { addGarbageLines } from "./logic/addGarbageLines.js";
 import clearLines from "./logic/clearLines.js";
 import createBoard from "./logic/createBoard.js";
@@ -39,7 +38,7 @@ export default class Game {
     }
   }
 
-  handleHardDrop(player, io) {
+  handleHardDrop(player) {
     const droppedPiece = hardDrop(
       player.board,
       player.currentPiece,
@@ -58,11 +57,10 @@ export default class Game {
     player.setBoard(finalBoard);
     player.clearPiece();
 
-    const newPiece = this.spawnPieceForAll();
+    this.spawnPieceForAll();
 
-    if (!isValidPosition(player.board, newPiece)) {
+    if (!isValidPosition(player.board, player.currentPiece)) {
       this.killPlayer(player.id);
-      return -1;
     }
   }
 
@@ -83,7 +81,25 @@ export default class Game {
     }
   }
 
-  lockCurrentPiece(player, io) {
+  getNextPiece() {
+    if (this.bagIndex >= this.bag.length) {
+      this.bag = shuffle([...PIECE_TYPES]);
+      this.bagIndex = 0;
+    }
+
+    return this.bag[this.bagIndex++];
+  }
+
+  spawnPieceForAll() {
+    const type = this.getNextPiece();
+    this.players.forEach((player) => {
+      if (player.alive) {
+        player.givePiece(type);
+      }
+    });
+  }
+
+  lockCurrentPiece(player) {
     let newBoard = lockPiece(player.board, player.currentPiece);
 
     // clear lines
@@ -103,8 +119,8 @@ export default class Game {
 
     // Spaw next pice
     player.clearPiece();
-    const piece = this.spawnPieceForAll();
-    if (!isValidPosition(player.board, piece)) {
+    this.spawnPieceForAll();
+    if (!isValidPosition(player.board, player.currentPiece)) {
       this.killPlayer(player.id);
       // player.clearPiece();
     }
@@ -182,25 +198,6 @@ export default class Game {
   resetBag() {
     this.bag = shuffle([...PIECE_TYPES]);
     this.bagIndex = 0;
-  }
-
-  getNextPiece() {
-    if (this.bagIndex >= this.bag.length) {
-      this.bag = shuffle([...PIECE_TYPES]);
-      this.bagIndex = 0;
-    }
-
-    return this.bag[this.bagIndex++];
-  }
-
-  spawnPieceForAll() {
-    const type = this.getNextPiece();
-    this.players.forEach((player) => {
-      if (player.alive) {
-        player.givePiece(type);
-      }
-    });
-    return new Piece(type);
   }
 
   handleLineClear(clearingPlayerId, linesCleared) {

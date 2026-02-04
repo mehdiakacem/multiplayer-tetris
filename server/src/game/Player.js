@@ -17,11 +17,8 @@ export default class Player {
   }
 
   givePiece(type) {
-    if (!this.currentPiece) {
-      this.currentPiece = new Piece(type);
-    } else {
-      this.queue.push(type);
-    }
+    this.queue.push(type);
+    if (!this.currentPiece) this.currentPiece = new Piece(this.queue.shift());
   }
 
   clearPiece() {
