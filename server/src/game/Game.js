@@ -1,4 +1,3 @@
-import Piece from "./Piece.js";
 import { addGarbageLines } from "./logic/addGarbageLines.js";
 import clearLines from "./logic/clearLines.js";
 import createBoard from "./logic/createBoard.js";
@@ -24,113 +23,97 @@ export default class Game {
     this.bagIndex = 0;
   }
 
-  handleInput(playerId, action, io) {
-    const player = this.players.get(playerId);
-    if (!player || !player.alive) return;
-
-    const piece = player.currentPiece;
-    if (!piece) return;
-
-    let newPiece;
-
+  computeMove(piece, action) {
     switch (action) {
       case "left":
-        newPiece = move(piece, -1, 0);
-        break;
+        return move(piece, -1, 0);
       case "right":
-        newPiece = move(piece, 1, 0);
-        break;
+        return move(piece, 1, 0);
       case "rotate":
-        newPiece = rotate(piece);
-        break;
+        return rotate(piece);
       case "down":
-        newPiece = move(piece, 0, 1);
-        break;
-      case "hardDrop":
-        const droppedPiece = hardDrop(player.board, piece, isValidPosition);
-
-        const boardWithLockedPiece = lockPiece(player.board, droppedPiece);
-
-        const { linesCleared, newBoard: boardWithClearedLines } =
-          clearLines(boardWithLockedPiece);
-
-        this.handleLineClear(player.id, linesCleared);
-
-        const penalties = player.consumePenaltyLines();
-        const newBoard = addGarbageLines(boardWithClearedLines, penalties);
-        player.setBoard(newBoard);
-        player.clearPiece();
-        newPiece = this.spawnPieceForAll();
-        if (!isValidPosition(player.board, newPiece)) {
-          this.killPlayer(player.id, io);
-          return -1;
-        }
-        return;
-        break;
+        return move(piece, 0, 1);
       default:
-        return;
+        return null;
     }
+  }
+
+  handleHardDrop(player) {
+    const droppedPiece = hardDrop(
+      player.board,
+      player.currentPiece,
+      isValidPosition,
+    );
+
+    this.handleLockPiece(player, droppedPiece);
+  }
+
+  handleLockPiece(player, piece) {
+    const boardWithLockedPiece = lockPiece(player.board, piece);
+
+    const { linesCleared, newBoard } = clearLines(boardWithLockedPiece);
+
+    this.handleLineClear(player.id, linesCleared);
+
+    const penalties = player.consumePenaltyLines();
+    const finalBoard = addGarbageLines(newBoard, penalties);
+    player.setBoard(finalBoard);
+
+    player.clearPiece();
+    this.spawnPieceForAll();
+
+    if (!isValidPosition(player.board, player.currentPiece)) {
+      this.killPlayer(player.id);
+    }
+  }
+
+  tick() {
+    if (!this.started || this.ended) return;
+
+    this.players.forEach((player) => {
+      if (!player.alive || !player.currentPiece) return;
+
+      const newPiece = this.computeMove(player.currentPiece, "down");
+
+      if (isValidPosition(player.board, newPiece)) {
+        player.setPiece(newPiece);
+      } else {
+        this.handleLockPiece(player, player.currentPiece);
+      }
+    });
+  }
+
+  handleInput(playerId, action) {
+    const player = this.players.get(playerId);
+    if (!player || !player.alive || !player.currentPiece) return;
+
+    if (action === "hardDrop") {
+      this.handleHardDrop(player);
+      return;
+    }
+
+    const newPiece = this.computeMove(player.currentPiece, action);
+    if (!newPiece) return;
 
     if (isValidPosition(player.board, newPiece)) {
       player.setPiece(newPiece);
     }
   }
 
-  lockCurrentPiece(player, io) {
-    let newBoard = lockPiece(player.board, player.currentPiece);
-
-    // clear lines
-    const result = clearLines(newBoard);
-    player.setBoard(result.newBoard);
-    if (result.linesCleared > 0) {
-      // handle line clear
-      this.handleLineClear(player.id, result.linesCleared);
+  getNextPiece() {
+    if (this.bagIndex >= this.bag.length) {
+      this.bag = shuffle([...PIECE_TYPES]);
+      this.bagIndex = 0;
     }
 
-    // apply penalties
-    const penalties = player.consumePenaltyLines();
-    if (penalties > 0) {
-      newBoard = addGarbageLines(player.board, penalties);
-      player.setBoard(newBoard);
-    }
-
-    // Spaw next pice
-    player.clearPiece();
-    const piece = this.spawnPieceForAll();
-    if (!isValidPosition(player.board, piece)) {
-      this.killPlayer(player.id, io);
-      return -1;
-      // player.clearPiece();
-    }
+    return this.bag[this.bagIndex++];
   }
 
-  handleLineClear(clearingPlayerId, linesCleared) {
-    if (linesCleared <= 0) return;
-
-    const penalty = linesCleared - 1;
-
-    if (penalty <= 0) return;
-
-    this.players.forEach((player, id) => {
-      if (id !== clearingPlayerId && player.alive) {
-        player.addPenaltyLines(penalty);
-      }
-    });
-  }
-
-  tick(io) {
-    if (!this.started || this.ended) return;
-
+  spawnPieceForAll() {
+    const type = this.getNextPiece();
     this.players.forEach((player) => {
-      if (!player.alive || !player.currentPiece) return;
-
-      const test = player.currentPiece.clone();
-      test.move(0, 1);
-
-      if (isValidPosition(player.board, test)) {
-        player.currentPiece.move(0, 1);
-      } else {
-        this.lockCurrentPiece(player, io);
+      if (player.alive) {
+        player.givePiece(type);
       }
     });
   }
@@ -172,44 +155,20 @@ export default class Game {
     return true;
   }
 
-  endedGame(io) {
+  endGame() {
     this.started = false;
     this.ended = true;
-    io.to(this.room).emit("game-over", { game: this.getPublicState() });
   }
 
   resetPlayers() {
     this.players.forEach((player) => {
-      player.alive = true;
-      player.setBoard(createBoard());
-      player.pendingPenaltyLines = 0;
-      player.queue = [];
-      player.clearPiece();
+      player.reset();
     });
   }
 
   resetBag() {
     this.bag = shuffle([...PIECE_TYPES]);
     this.bagIndex = 0;
-  }
-
-  getNextPiece() {
-    if (this.bagIndex >= this.bag.length) {
-      this.bag = shuffle([...PIECE_TYPES]);
-      this.bagIndex = 0;
-    }
-
-    return this.bag[this.bagIndex++];
-  }
-
-  spawnPieceForAll() {
-    const type = this.getNextPiece();
-    this.players.forEach((player) => {
-      if (player.alive) {
-        player.givePiece(type);
-      }
-    });
-    return new Piece(type);
   }
 
   handleLineClear(clearingPlayerId, linesCleared) {
@@ -226,7 +185,7 @@ export default class Game {
     });
   }
 
-  killPlayer(playerId, io) {
+  killPlayer(playerId) {
     const player = this.players.get(playerId);
     if (!player) return;
 
@@ -235,7 +194,7 @@ export default class Game {
     const alivePlayers = [...this.players.values()].filter((p) => p.alive);
 
     if (alivePlayers.length <= 1) {
-      this.endedGame(io);
+      this.endGame();
     }
   }
 

@@ -18,7 +18,7 @@ export function useGameSocket({ room, playerName }) {
     socket.on("player-joined", ({ players, hostId }) => {
       setOpponents(players.filter((p) => p.id !== socket.id));
       setHostId(hostId);
-      setStatus(GAME_STATUS.WAITING)
+      setStatus(GAME_STATUS.WAITING);
     });
 
     socket.on("join-denied", () => {
@@ -35,25 +35,15 @@ export function useGameSocket({ room, playerName }) {
       setStatus(GAME_STATUS.PLAYING);
     });
 
-    socket.on("game-tick", ({ game }) => {
+    socket.on("game-state", ({ game }) => {
       setGame(game);
       const me = game.players.find((p) => p.id === socket.id);
       if (!me) return;
-      if (!me.alive) {
-        setStatus(GAME_STATUS.ELIMINATED);
-      } else {
-        setStatus(GAME_STATUS.PLAYING);
+      setStatus(me.alive ? GAME_STATUS.PLAYING : GAME_STATUS.ELIMINATED);
+      if (game.ended) {
+        setStatus(me.alive ? GAME_STATUS.WON : GAME_STATUS.ENDED);
       }
       setOpponents(game.players.filter((p) => p.id !== socket.id));
-    });
-
-    socket.on("game-over", ({ game }) => {
-      setGame(game);
-
-      const me = game.players.find((p) => p.id === socket.id);
-      if (!me) return;
-
-      setStatus(me.alive ? GAME_STATUS.WON : GAME_STATUS.ENDED);
     });
 
     return () => {
