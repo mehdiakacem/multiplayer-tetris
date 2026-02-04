@@ -17,7 +17,6 @@ setInterval(() => {
   gameManager.getAllGames().forEach((game) => {
     game.tick();
     if (game.started || game.ended) {
-      console.log(game.getPublicState());
       io.to(game.room).emit("game-state", { game: game.getPublicState() });
     }
   });

@@ -16,6 +16,14 @@ export default class Player {
     this.spectrum = computeSpectrum(this.board);
   }
 
+  reset() {
+    this.alive = true;
+    this.pendingPenaltyLines = 0;
+    this.queue = [];
+    this.clearPiece();
+    this.setBoard(createBoard());
+  }
+
   givePiece(type) {
     this.queue.push(type);
     if (!this.currentPiece) this.currentPiece = new Piece(this.queue.shift());

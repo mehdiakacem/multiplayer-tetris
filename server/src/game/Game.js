@@ -45,7 +45,11 @@ export default class Game {
       isValidPosition,
     );
 
-    const boardWithLockedPiece = lockPiece(player.board, droppedPiece);
+    this.handleLockPiece(player, droppedPiece);
+  }
+
+  handleLockPiece(player, piece) {
+    const boardWithLockedPiece = lockPiece(player.board, piece);
 
     const { linesCleared, newBoard } = clearLines(boardWithLockedPiece);
 
@@ -53,15 +57,30 @@ export default class Game {
 
     const penalties = player.consumePenaltyLines();
     const finalBoard = addGarbageLines(newBoard, penalties);
-
     player.setBoard(finalBoard);
+    
     player.clearPiece();
-
     this.spawnPieceForAll();
 
     if (!isValidPosition(player.board, player.currentPiece)) {
       this.killPlayer(player.id);
     }
+  }
+
+  tick() {
+    if (!this.started || this.ended) return;
+
+    this.players.forEach((player) => {
+      if (!player.alive || !player.currentPiece) return;
+
+      const newPiece = this.computeMove(player.currentPiece, "down");
+
+      if (isValidPosition(player.board, newPiece)) {
+        player.setPiece(newPiece);
+      } else {
+        this.handleLockPiece(player, player.currentPiece);
+      }
+    });
   }
 
   handleInput(playerId, action) {
@@ -95,50 +114,6 @@ export default class Game {
     this.players.forEach((player) => {
       if (player.alive) {
         player.givePiece(type);
-      }
-    });
-  }
-
-  lockCurrentPiece(player) {
-    let newBoard = lockPiece(player.board, player.currentPiece);
-
-    // clear lines
-    const result = clearLines(newBoard);
-    player.setBoard(result.newBoard);
-    if (result.linesCleared > 0) {
-      // handle line clear
-      this.handleLineClear(player.id, result.linesCleared);
-    }
-
-    // apply penalties
-    const penalties = player.consumePenaltyLines();
-    if (penalties > 0) {
-      newBoard = addGarbageLines(player.board, penalties);
-      player.setBoard(newBoard);
-    }
-
-    // Spaw next pice
-    player.clearPiece();
-    this.spawnPieceForAll();
-    if (!isValidPosition(player.board, player.currentPiece)) {
-      this.killPlayer(player.id);
-      // player.clearPiece();
-    }
-  }
-
-  tick() {
-    if (!this.started || this.ended) return;
-
-    this.players.forEach((player) => {
-      if (!player.alive || !player.currentPiece) return;
-
-      const test = player.currentPiece.clone();
-      test.move(0, 1);
-
-      if (isValidPosition(player.board, test)) {
-        player.currentPiece.move(0, 1);
-      } else {
-        this.lockCurrentPiece(player);
       }
     });
   }
@@ -187,11 +162,7 @@ export default class Game {
 
   resetPlayers() {
     this.players.forEach((player) => {
-      player.alive = true;
-      player.setBoard(createBoard());
-      player.pendingPenaltyLines = 0;
-      player.queue = [];
-      player.clearPiece();
+      player.reset();
     });
   }
 
@@ -214,7 +185,7 @@ export default class Game {
     });
   }
 
-  killPlayer(playerId, io) {
+  killPlayer(playerId) {
     const player = this.players.get(playerId);
     if (!player) return;
 
