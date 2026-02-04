@@ -58,7 +58,7 @@ export default class Game {
     const penalties = player.consumePenaltyLines();
     const finalBoard = addGarbageLines(newBoard, penalties);
     player.setBoard(finalBoard);
-    
+
     player.clearPiece();
     this.spawnPieceForAll();
 
