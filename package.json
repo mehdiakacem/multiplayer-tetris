@@ -11,7 +11,10 @@
     "dev:server": "nodemon --watch src/server --ext js --exec 'node src/server/index.js'",
     "start:server": "node src/server/index.js",
     "dev": "concurrently --kill-others-on-fail \"npm run dev:client\" \"npm run dev:server\"",
-    "test": "vitest"
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "express": "^5.2.1",
@@ -23,13 +26,18 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@vitejs/plugin-react": "^5.1.1",
+    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/ui": "^4.0.18",
     "baseline-browser-mapping": "^2.9.19",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
+    "jsdom": "^28.0.0",
     "nodemon": "^3.1.11",
     "vite": "^7.2.4",
     "vitest": "^4.0.18"
