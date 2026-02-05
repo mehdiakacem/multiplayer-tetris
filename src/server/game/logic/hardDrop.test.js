@@ -1,5 +1,7 @@
 import hardDrop from "./hardDrop.js";
 import isValidPosition from "./isValidPosition.js";
+import { describe, test, expect } from 'vitest';
+
 
 describe("hardDrop", () => {
   const createBoard = (rows = 20, cols = 10) => {

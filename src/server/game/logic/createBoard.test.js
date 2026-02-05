@@ -1,4 +1,6 @@
 import createBoard from "./createBoard.js";
+import { describe, test, expect } from 'vitest';
+
 
 describe("createBoard", () => {
   test("returns a 20x10 board", () => {

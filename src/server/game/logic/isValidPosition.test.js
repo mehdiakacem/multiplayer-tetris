@@ -1,4 +1,5 @@
 import isValidPosition from "./isValidPosition.js";
+import { describe, test, expect, beforeEach } from 'vitest';
 
 describe("isValidPosition", () => {
   let emptyBoard;

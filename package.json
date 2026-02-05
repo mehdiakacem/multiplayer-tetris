@@ -10,7 +10,8 @@
     "preview:client": "vite preview",
     "dev:server": "nodemon --watch src/server --ext js --exec 'node src/server/index.js'",
     "start:server": "node src/server/index.js",
-    "dev": "concurrently --kill-others-on-fail \"npm run dev:client\" \"npm run dev:server\""
+    "dev": "concurrently --kill-others-on-fail \"npm run dev:client\" \"npm run dev:server\"",
+    "test": "vitest"
   },
   "dependencies": {
     "express": "^5.2.1",
@@ -30,6 +31,7 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "globals": "^16.5.0",
     "nodemon": "^3.1.11",
-    "vite": "^7.2.4"
+    "vite": "^7.2.4",
+    "vitest": "^4.0.18"
   }
 }

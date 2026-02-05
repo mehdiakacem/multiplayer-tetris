@@ -1,4 +1,5 @@
 import lockPiece from "./lockPiece.js";
+import { describe, test, expect } from 'vitest';
 
 describe("lockPiece", () => {
   test("locks a piece matrix onto the board at the correct position", () => {

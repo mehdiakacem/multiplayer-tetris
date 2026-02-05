@@ -1,4 +1,6 @@
 import computeSpectrum from "./computeSpectrum.js";
+import { describe, test, expect } from 'vitest';
+
 
 const emptyBoard = () => Array.from({ length: 20 }, () => Array(10).fill(0));
 

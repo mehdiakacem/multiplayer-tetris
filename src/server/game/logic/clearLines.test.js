@@ -1,4 +1,6 @@
 import clearLines from "./clearLines.js";
+import { describe, test, expect } from 'vitest';
+
 
 describe("clearLines", () => {
   const createBoard = (rows = 20, cols = 10) => {

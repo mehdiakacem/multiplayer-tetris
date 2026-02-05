@@ -1,4 +1,5 @@
 import rotate from "./rotate";
+import { test, expect } from 'vitest';
 
 test("rotates a 2x2 matrix clockwise", () => {
   const piece = createPiece([

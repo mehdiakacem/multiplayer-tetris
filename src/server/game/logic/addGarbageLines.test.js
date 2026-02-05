@@ -1,4 +1,6 @@
 import { addGarbageLines } from "./addGarbageLines.js";
+import { describe, test, expect } from 'vitest';
+
 
 describe("addGarbageLines", () => {
   const emptyRow = Array(10).fill(0);

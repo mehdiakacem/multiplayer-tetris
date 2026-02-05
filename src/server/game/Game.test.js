@@ -3,6 +3,7 @@ import Player from "./Player.js";
 import createBoard from "./logic/createBoard.js";
 import isValidPosition from "./logic/isValidPosition.js";
 import move from "./logic/move.js";
+import { describe, test, expect, beforeEach } from 'vitest';
 
 describe("Game", () => {
   let game;

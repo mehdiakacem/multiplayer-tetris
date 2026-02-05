@@ -1,4 +1,5 @@
 import move from "./move.js";
+import { describe, test, expect } from 'vitest';
 
 describe("move", () => {
   const createPiece = (x = 0, y = 0, type = "T") => ({

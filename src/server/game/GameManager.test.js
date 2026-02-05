@@ -1,5 +1,7 @@
 import GameManager from "./GameManager.js";
 import Game from "./Game.js";
+import { describe, test, expect, beforeEach } from 'vitest';
+
 
 describe("GameManager", () => {
   let manager;

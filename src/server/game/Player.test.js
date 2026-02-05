@@ -1,5 +1,7 @@
 import Player from "./Player.js";
 import Piece from "./Piece.js";
+import { describe, test, expect } from 'vitest';
+
 
 describe("Player", () => {
   test("creates a player with default state", () => {
