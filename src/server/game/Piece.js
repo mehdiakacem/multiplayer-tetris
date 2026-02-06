@@ -6,15 +6,6 @@ export default class Piece {
     this.position = { x: Math.floor((10 - this.matrix[0].length) / 2), y: 0 };
   }
 
-  move(dx, dy) {
-    this.position.x += dx;
-    this.position.y += dy;
-  }
-
-  setPosition(x, y) {
-    this.position = { x, y };
-  }
-
   clone() {
     const copy = new Piece(this.type);
     copy.rotation = this.rotation;
