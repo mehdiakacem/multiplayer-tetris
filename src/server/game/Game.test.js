@@ -1,9 +1,9 @@
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import Game from "./Game.js";
 import Player from "./Player.js";
 import createBoard from "./logic/createBoard.js";
-import isValidPosition from "./logic/isValidPosition.js";
+import isValidPosition, * as isValidModule from "./logic/isValidPosition.js";
 import move from "./logic/move.js";
-import { describe, test, expect, beforeEach } from 'vitest';
 
 describe("Game", () => {
   let game;
@@ -98,6 +98,35 @@ describe("Game", () => {
       game.handleInput("p1", "invalid-action");
 
       expect(player1.currentPiece).toBe(pieceBefore);
+    });
+
+    test("handles right and rotate actions", () => {
+      const pieceBefore = player1.currentPiece;
+
+      game.handleInput("p1", "right");
+      expect(player1.currentPiece).not.toBe(pieceBefore);
+
+      const pieceAfterRight = player1.currentPiece;
+
+      game.handleInput("p1", "rotate");
+
+      expect(player1.currentPiece).not.toBeNull();
+      expect(player1.currentPiece).toBeDefined();
+      expect(player1.currentPiece).not.toBe(undefined);
+    });
+
+  });
+
+  describe("getNextPiece and bag refill", () => {
+    test("refills bag when empty", () => {
+      game.bag = [];
+      game.bagIndex = 0;
+
+      const piece = game.getNextPiece();
+
+      expect(game.bag.length).toBeGreaterThan(0);
+      expect(game.bagIndex).toBe(1);
+      expect(typeof piece).toBe("string");
     });
   });
 
