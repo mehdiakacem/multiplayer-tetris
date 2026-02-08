@@ -1,5 +1,5 @@
 import Board from "../Board/Board";
-import GameOverLay from "../GameOverlay/GameOverlay";
+import GameOverlay from "../GameOverlay/GameOverlay";
 
 export default function BoardSection({
   player,
@@ -9,7 +9,7 @@ export default function BoardSection({
 }) {
   return (
     <div className="board-container">
-      <GameOverLay
+      <GameOverlay
         status={status}
         isHost={isHost}
         onRestart={onRestart}
