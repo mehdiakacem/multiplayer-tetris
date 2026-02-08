@@ -12,7 +12,7 @@ export default function Board({ board, activePiece }) {
     Z: "red",
     J: "blue",
     L: "orange",
-    0: "",
+    0: "empty",
     X: "gray",
   };
   return (
