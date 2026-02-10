@@ -1,31 +1,12 @@
+import BoardPanel from "../BoardPanel/BoardPanel";
 import OpponentsPanel from "../OpponentsPanel/OpponentsPanel";
-import Panel from "../Panel/Panel";
 import "./Game.css";
 
 function Game({ opponents }) {
   return (
     <main className="game-layout">
       <OpponentsPanel opponents={opponents} />
-
-      {/* <!-- CENTER: BOARD --> */}
-      <section className="boardPanel">
-        <div className="board">
-          {/* <!-- 20 × 10 = 200 cells --> */}
-          {/* <!-- Example row --> */}
-          <div className="cell"></div>
-          <div className="cell filled"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          {/* <!-- repeat until you reach 200 cells --> */}
-        </div>
-      </section>
-
+      <BoardPanel />
       <aside className="panel">
         <h3>Next Piece</h3>
 

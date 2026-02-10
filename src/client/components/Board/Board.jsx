@@ -1,9 +1,6 @@
 import "./Board.css";
 
 export default function Board({ board, activePiece }) {
-  if (!board) {
-    return <div className="board"></div>;
-  }
   const PIECE_COLORS = {
     I: "cyan",
     O: "yellow",
@@ -17,7 +14,7 @@ export default function Board({ board, activePiece }) {
   };
   return (
     <div className="board">
-      {board.map((row, y) =>
+      {board && board.map((row, y) =>
         row.map((cellType, x) => (
           <Cell
             key={`${x}-${y}`}

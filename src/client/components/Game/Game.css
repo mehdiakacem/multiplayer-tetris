@@ -5,38 +5,3 @@
   gap: 14px;
   align-items: start;
 }
-
-/* Center board area */
-.boardPanel {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.02);
-  padding: 12px;
-  display: flex;
-  justify-content: center;
-}
-
-/* Board itself */
-.board {
-  width: min(420px, 85vw);
-  aspect-ratio: 10 / 20; /* keep it tall */
-  display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  grid-template-rows: repeat(20, 1fr);
-  gap: 2px;
-  padding: 6px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.35);
-}
-
-/* Cells */
-.cell {
-  border-radius: 4px;
-  background: rgba(255, 255, 255, 0.06);
-}
-.cell.filled {
-  background: rgba(255, 60, 80, 0.95); /* your red vibe */
-}
-.cell.garbage {
-  background: rgba(255, 255, 255, 0.18);
-}
