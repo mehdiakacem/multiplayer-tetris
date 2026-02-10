@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router";
 import { Routes, Route, Navigate } from "react-router";
 import HomePage from "./pages/HomePage/HomePage.jsx";
-import Layout from "./layout/Layout.jsx";
 import GamePage from "./pages/GamePage/GamePage.jsx";
 import App from "./App.jsx";
 
