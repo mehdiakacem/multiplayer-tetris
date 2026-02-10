@@ -1,0 +1,128 @@
+:root {
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 16px;
+  background: #0b0f14;
+  color: #e6edf3;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+}
+
+.game-layout {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 280px minmax(320px, 1fr) 280px;
+  gap: 14px;
+  align-items: start;
+}
+
+.panel {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 12px;
+}
+
+/* Center board area */
+.boardPanel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  padding: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Board itself */
+.board {
+  width: min(420px, 85vw);
+  aspect-ratio: 10 / 20; /* keep it tall */
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(20, 1fr);
+  gap: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* Cells */
+.cell {
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.cell.filled {
+  background: rgba(255, 60, 80, 0.95); /* your red vibe */
+}
+.cell.garbage {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+@media (max-width: 640px) {
+  .gamePage { padding: 12px; }
+
+  .gameLayout {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Turn left/right panels into a bottom sheet instead */
+  .panel {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-height: 55vh;
+
+    border-radius: 16px;
+    padding: 12px;
+
+    transform: translateY(calc(100% - 52px)); /* collapsed */
+    transition: transform 180ms ease;
+  }
+
+  .panel.open {
+    transform: translateY(0); /* expanded */
+  }
+
+  .panelHandle {
+    width: 44px;
+    height: 5px;
+    border-radius: 99px;
+    margin: 0 auto 10px auto;
+    background: rgba(255,255,255,0.18);
+  }
+
+  .board {
+    width: min(380px, 92vw);
+  }
+}

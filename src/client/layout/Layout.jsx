@@ -10,7 +10,6 @@ function Layout({ children }) {
         </Link>
       </header>
       <main>{children}</main>
-      <footer className="footer">Status</footer>
     </div>
   );
 }
