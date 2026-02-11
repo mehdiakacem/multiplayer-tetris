@@ -25,7 +25,6 @@ const Header = ({ roomName, status, isHost, onStart }) => {
       {/* RIGHT: Host Button */}
       {isHost &&
         (status === GAME_STATUS.WAITING ||
-          status === GAME_STATUS.ENDED ||
           status === GAME_STATUS.WON) ? (
           <button className="primaryButton" onClick={onStart}>
             START

@@ -2,6 +2,7 @@ import { GAME_STATUS } from "../../constants/gameStatus";
 import JoinGameForm from "../JoinGameForm/JoinGameForm";
 import StartButton from "../StartButton/StartButton";
 import WaitingForHost from "../WaitingForHost/WaintingForHost";
+import Panel from "../Panel/Panel";
 import "./Overlay.css";
 
 function Overlay({ status, isHost, onStart }) {
@@ -9,7 +10,11 @@ function Overlay({ status, isHost, onStart }) {
     case GAME_STATUS.WAITING:
       return (
         <div className="overlay">
-          {isHost ? <span>Press START to begin the game</span> : <WaitingForHost />}
+          {isHost ? (
+            <span>Press START to begin the game</span>
+          ) : (
+            <WaitingForHost />
+          )}
         </div>
       );
 
@@ -24,12 +29,14 @@ function Overlay({ status, isHost, onStart }) {
     case GAME_STATUS.ENDED:
       return (
         <div className="overlay">
-          <p>You lost</p>
-          {isHost ? (
-            <StartButton onClick={onStart} restart />
-          ) : (
-            <WaitingForHost restart />
-          )}
+          <Panel>
+            <div className="gameOverPanel">
+              <span>Game Over</span>
+              <button className="primaryButton" onClick={onStart}>
+                RESTART
+              </button>
+            </div>
+          </Panel>
         </div>
       );
 
