@@ -16,34 +16,27 @@
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.06);
 }
+
 .cell.filled {
-  background: rgba(255, 60, 80, 0.95); /* your red vibe */
+  border-radius: 4px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.12),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
 }
+
 .cell.garbage {
   background: rgba(255, 255, 255, 0.18);
 }
 
-.cyan {
-  background: cyan;
-}
-.yellow {
-  background: yellow;
-}
-.purple {
-  background: purple;
-}
-.green {
-  background: green;
-}
-.red {
-  background: red;
-}
-.blue {
-  background: blue;
-}
-.orange {
-  background: orange;
-}
+.cyan   { background: rgba(0, 180, 200, 0.95); }
+.yellow { background: rgba(240, 180, 0, 0.95); }
+.purple { background: rgba(140, 80, 220, 0.95); }
+.green  { background: rgba(0, 170, 110, 0.95); }
+.red    { background: rgba(255, 60, 80, 0.95); }
+.blue   { background: rgba(50, 110, 230, 0.95); }
+.orange { background: rgba(230, 120, 0, 0.95); }
+
+
 .gray {
   background: gray;
 }

@@ -2,13 +2,13 @@ import "./Board.css";
 
 export default function Board({ board, activePiece }) {
   const PIECE_COLORS = {
-    I: "cyan",
-    O: "yellow",
-    T: "purple",
-    S: "green",
-    Z: "red",
-    J: "blue",
-    L: "orange",
+    I: "cyan filled",
+    O: "yellow filled",
+    T: "purple filled",
+    S: "green filled",
+    Z: "red filled",
+    J: "blue filled",
+    L: "orange filled",
     0: "empty",
     X: "gray",
   };
