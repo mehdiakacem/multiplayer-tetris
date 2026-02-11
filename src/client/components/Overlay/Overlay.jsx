@@ -9,7 +9,7 @@ function Overlay({ status, isHost, onStart }) {
     case GAME_STATUS.WAITING:
       return (
         <div className="overlay">
-          {isHost ? <StartButton onClick={onStart} /> : <WaitingForHost />}
+          {isHost ? <span>Press START to begin the game</span> : <WaitingForHost />}
         </div>
       );
 

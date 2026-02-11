@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import "./Header.css";
+import { GAME_STATUS } from "../../constants/gameStatus";
 
 const Header = ({ roomName, status, isHost, onStart }) => {
   return (
@@ -22,11 +23,14 @@ const Header = ({ roomName, status, isHost, onStart }) => {
       )}
 
       {/* RIGHT: Host Button */}
-      {isHost && (
-        <button className="primaryButton" onClick={onStart}>
-          START
-        </button>
-      )}
+      {isHost &&
+        (status === GAME_STATUS.WAITING ||
+          status === GAME_STATUS.ENDED ||
+          status === GAME_STATUS.WON) ? (
+          <button className="primaryButton" onClick={onStart}>
+            START
+          </button>
+        ): (<div className="placeholder" />) /* to keep spacing consistent */}
     </header>
   );
 };
