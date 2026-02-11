@@ -1,19 +1,27 @@
-/* .board {
+/* Board itself */
+.board {
+  width: min(390px, 85vw);
+  aspect-ratio: 10 / 20;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(20, 1fr);
+  gap: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
+}
 
-  width: 300px;
-  height: 600px;
-
-  background: #111;
-  border: 2px solid #444;
-} */
-
-/* .cell {
-  border: 1px solid #222;
-  background: #000;
-} */
+/* Cells */
+.cell {
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+}
+.cell.filled {
+  background: rgba(255, 60, 80, 0.95); /* your red vibe */
+}
+.cell.garbage {
+  background: rgba(255, 255, 255, 0.18);
+}
 
 .cyan {
   background: cyan;
@@ -40,14 +48,10 @@
   background: gray;
 }
 
-
-
-
-
 .start-form a {
   display: block;
   padding: 10px;
-  font-size: 16px;    
+  font-size: 16px;
   font-weight: bolder;
   border: none;
   border-radius: 4px;

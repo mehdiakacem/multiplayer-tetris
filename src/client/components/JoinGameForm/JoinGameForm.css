@@ -1,43 +1,105 @@
 .join-form {
+  width: 100%;
+  max-width: 360px;
+
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  background-color: #222;
-  padding: 20px;
-  border: 2px solid #555;
-  grid-column-start: 2;
-  grid-column-end: 10;
-  grid-row-start: 7;
-  /* grid-row-end: 12; */
+  gap: 14px;
+
+  padding: 28px;
+
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
-.join-form input {
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #555;
-  /* border-radius: 2px; */
-  background-color: #333;
-  color: #fff;
+.formTitle {
+  margin: 0 0 10px 0;
+  text-align: center;
+
+  font-size: 20px;
+  font-weight: 600;
+
+  letter-spacing: 0.5px;
 }
 
-.join-button {
-  background: green;
-  color: white;
-  cursor: pointer;
-  display: block;
-  padding: 10px;
-  font-size: 16px;
-  font-weight: bolder;
+.input {
+  padding: 12px 14px;
+
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  background: rgba(0, 0, 0, 0.35);
+  color: #e6edf3;
+
+  font-size: 14px;
+
+  transition:
+    border 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.input:focus {
+  outline: none;
+  border: 1px solid rgba(255, 60, 80, 0.8);
+  box-shadow: 0 0 0 2px rgba(255, 60, 80, 0.2);
+}
+
+.primaryButton {
+  padding: 12px;
+
+  border-radius: 12px;
   border: none;
-  border-radius: 4px;
+
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  cursor: pointer;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 50, 70, 0.95),
+    rgba(200, 20, 40, 0.95)
+  );
+
+  color: white;
+
+  transition:
+    transform 120ms ease,
+    box-shadow 120ms ease,
+    opacity 120ms ease;
 }
 
-.join-button:hover {
-  background: rgb(0, 161, 0);
+.primaryButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(255, 60, 80, 0.35);
 }
 
-.join-button.disabled {
-  background: darkgreen;
+.primaryButton:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.primaryButton.disabled,
+.primaryButton:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
-  opacity: 0.6;
+  box-shadow: none;
 }
+
+
+@media (max-width: 480px) {
+  .joinForm {
+    margin: 16px;
+    padding: 22px;
+  }
+}
+

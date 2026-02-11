@@ -1,5 +1,5 @@
 import Board from "../Board/Board";
-import GameOverlay from "../GameOverlay/GameOverlay";
+import GameOverlay from "../Overlay/Overlay";
 
 export default function BoardSection({
   player,

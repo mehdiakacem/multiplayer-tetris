@@ -1,0 +1,30 @@
+.overlay {
+  position: absolute;
+  width: min(390px, 85vw);
+  aspect-ratio: 10 / 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(5, 8, 12, 0.75);
+  backdrop-filter: blur(6px);
+
+  z-index: 10;
+
+  border-radius: 12px;
+}
+
+/* .overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(5, 8, 12, 0.75);
+  backdrop-filter: blur(6px);
+
+  z-index: 100;
+} */
