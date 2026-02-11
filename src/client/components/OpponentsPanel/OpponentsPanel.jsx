@@ -3,7 +3,7 @@ import Panel from "../Panel/Panel";
 function OpponentsPanel({ opponents }) {
   return (
     <Panel>
-      {opponents && (
+      {opponents.length > 0 && (
         <>
           <h3>Opponents</h3>
           <div className="opponent">

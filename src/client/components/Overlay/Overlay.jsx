@@ -4,12 +4,12 @@ import StartButton from "../StartButton/StartButton";
 import WaitingForHost from "../WaitingForHost/WaintingForHost";
 import "./Overlay.css";
 
-function Overlay({ status, isHost, onRestart }) {
+function Overlay({ status, isHost, onStart }) {
   switch (status) {
     case GAME_STATUS.WAITING:
       return (
         <div className="overlay">
-          {isHost ? <StartButton onClick={onRestart} /> : <WaitingForHost />}
+          {isHost ? <StartButton onClick={onStart} /> : <WaitingForHost />}
         </div>
       );
 
@@ -26,7 +26,7 @@ function Overlay({ status, isHost, onRestart }) {
         <div className="overlay">
           <p>You lost</p>
           {isHost ? (
-            <StartButton onClick={onRestart} restart />
+            <StartButton onClick={onStart} restart />
           ) : (
             <WaitingForHost restart />
           )}
@@ -38,7 +38,7 @@ function Overlay({ status, isHost, onRestart }) {
         <div className="overlay">
           <p>You won 🎉</p>
           {isHost ? (
-            <StartButton onClick={onRestart} restart />
+            <StartButton onClick={onStart} restart />
           ) : (
             <WaitingForHost restart />
           )}

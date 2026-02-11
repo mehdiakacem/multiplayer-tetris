@@ -9,6 +9,9 @@ export function useGameSocket({ room, playerName }) {
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
+    if (!room || !playerName) {
+      return;
+    }
     socket.connect();
 
     socket.on("connect", () => {
@@ -48,7 +51,10 @@ export function useGameSocket({ room, playerName }) {
 
     return () => {
       socket.disconnect();
-      socket.removeAllListeners();
+      setOpponents([]);
+      setHostId(null);
+      setGame(null);
+      setStatus(null);
     };
   }, [room, playerName]);
   return {

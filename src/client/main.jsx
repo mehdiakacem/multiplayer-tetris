@@ -10,7 +10,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />} />
-          <Route path=":room/:playerName" element={<GamePage />} />
+          <Route path=":room/:playerName" element={<App />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     </BrowserRouter>

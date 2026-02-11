@@ -1,6 +1,6 @@
 /* Board itself */
 .board {
-  width: min(390px, 85vw);
+  width: min(380px, 85vw);
   aspect-ratio: 10 / 20;
   display: grid;
   grid-template-columns: repeat(10, 1fr);

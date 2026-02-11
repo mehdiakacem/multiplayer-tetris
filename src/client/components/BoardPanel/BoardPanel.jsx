@@ -2,11 +2,11 @@ import Board from "../Board/Board";
 import "./BoardPanel.css";
 import Overlay from "../Overlay/Overlay";
 
-function BoardPanel() {
+function BoardPanel({ player, status, isHost, onStart }) {
   return (
     <section className="board-panel">
-      <Board />
-      <Overlay status={null} isHost={false} />
+      <Board board={player?.board} activePiece={player?.currentPiece} />
+      <Overlay status={status} isHost={isHost} onStart={onStart} />
     </section>
   );
 }

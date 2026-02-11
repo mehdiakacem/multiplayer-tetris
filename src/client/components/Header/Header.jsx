@@ -1,14 +1,14 @@
 import { Link } from "react-router";
 import "./Header.css";
 
-const Header = ({ roomName, status, isHost }) => {
+const Header = ({ roomName, status, isHost, onStart }) => {
   return (
     <header className="header">
       {/* LEFT: Logo */}
       <Link to="/" className="logoGroup">
         <div className="logo">
           <div className="rtLogo" aria-label="Red Tetris">
-            <span className="rtLogo__text"></span>
+            <span className="rtLogo__text">RT</span>
           </div>
         </div>
         <span className="brandName">Red Tetris</span>
@@ -22,7 +22,11 @@ const Header = ({ roomName, status, isHost }) => {
       )}
 
       {/* RIGHT: Host Button */}
-      {isHost && <button className="primaryButton">Start</button>}
+      {isHost && (
+        <button className="primaryButton" onClick={onStart}>
+          START
+        </button>
+      )}
     </header>
   );
 };
