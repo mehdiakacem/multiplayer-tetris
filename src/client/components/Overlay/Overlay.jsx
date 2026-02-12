@@ -2,7 +2,6 @@ import { GAME_STATUS } from "../../constants/gameStatus";
 import JoinGameForm from "../JoinGameForm/JoinGameForm";
 import StartButton from "../StartButton/StartButton";
 import WaitingForHost from "../WaitingForHost/WaintingForHost";
-import Panel from "../Panel/Panel";
 import "./Overlay.css";
 
 function Overlay({ status, isHost, onStart }) {

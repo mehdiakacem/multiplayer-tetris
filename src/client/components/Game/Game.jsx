@@ -6,7 +6,7 @@ import "./Game.css";
 function Game({ opponents, player, onStart, status, isHost, hostId }) {
   return (
     <main className="game-layout">
-      <OpponentsPanel opponents={opponents} hostId={hostId} />
+      <OpponentsPanel opponents={opponents} hostId={hostId} status={status} />
       <BoardPanel
         player={player}
         status={status}

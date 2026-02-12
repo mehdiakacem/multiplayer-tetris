@@ -12,6 +12,11 @@
   border-bottom: 1px solid #333;
 }
 
+.opponent-name.eliminated {
+  color: #888; 
+  text-decoration: line-through;
+}
+
 .opponent-name {
   font-size: 14px;
   font-weight: bold;
@@ -20,8 +25,8 @@
 
 .spectrum {
   display: flex;
-  gap: 2px;
-  height: 130px;
+  gap:1px;
+  height: 140px;
   width: 120px;
 
   background: rgba(255, 255, 255, 0.06);
@@ -37,11 +42,11 @@
 
 .spectrum-fill {
   width: 100%;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 50, 70, 0.98),
-    rgba(200, 20, 40, 0.98)
-  );
+  background: rgba(170, 21, 39, 0.98);
   border-radius: 1px;
   transition: height 0.1s linear;
+}
+
+.spectrum-fill.eliminated {
+  background: rgba(95, 95, 95, 0.98);
 }
