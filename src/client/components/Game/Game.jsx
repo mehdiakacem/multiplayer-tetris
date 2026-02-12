@@ -3,10 +3,10 @@ import InfoPanel from "../InfoPanel/InfoPanel";
 import OpponentsPanel from "../OpponentsPanel/OpponentsPanel";
 import "./Game.css";
 
-function Game({ opponents, player, onStart, status, isHost }) {
+function Game({ opponents, player, onStart, status, isHost, hostId }) {
   return (
     <main className="game-layout">
-      <OpponentsPanel opponents={opponents} />
+      <OpponentsPanel opponents={opponents} hostId={hostId} />
       <BoardPanel
         player={player}
         status={status}

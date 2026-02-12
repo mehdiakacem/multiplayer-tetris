@@ -29,14 +29,12 @@ function Overlay({ status, isHost, onStart }) {
     case GAME_STATUS.ENDED:
       return (
         <div className="overlay">
-          <Panel>
             <div className="gameOverPanel">
               <span>Game Over</span>
               <button className="primaryButton" onClick={onStart}>
                 RESTART
               </button>
             </div>
-          </Panel>
         </div>
       );
 

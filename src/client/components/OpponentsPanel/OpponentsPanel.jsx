@@ -1,19 +1,14 @@
 import Panel from "../Panel/Panel";
+import Opponents from "../Opponents/Opponents";
 
-function OpponentsPanel({ opponents }) {
+
+function OpponentsPanel({ opponents, hostId }) {
   return (
     <Panel>
       {opponents.length > 0 && (
         <>
           <h3>Opponents</h3>
-          <div className="opponent">
-            <div>Alice</div>
-            <div className="spectrum">▮▮▮▮▮▯▯▯▯▯</div>
-          </div>
-          <div className="opponent">
-            <div>Bob</div>
-            <div className="spectrum">▮▮▮▮▮▮▮▯▯▯</div>
-          </div>
+          <Opponents opponents={opponents} hostId={hostId} />
         </>
       )}
     </Panel>

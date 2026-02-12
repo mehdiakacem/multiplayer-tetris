@@ -6,8 +6,8 @@ function Opponents({ opponents, hostId }) {
   return (
     <div className="opponents">
       {opponents.map((player) => (
-        <div key={player.id}>
-          <span>
+        <div key={player.id} className="opponent">
+          <span className="opponent-name">
             {player.id === hostId ? player.name + " (Host)" : player.name}
           </span>
           <Spectrum spectrum={player.spectrum || emptySpectrum} />

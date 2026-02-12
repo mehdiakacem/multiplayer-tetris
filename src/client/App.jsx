@@ -38,6 +38,7 @@ export default function App() {
         onStart={handleStartClick}
         status={status}
         isHost={isHost}
+        hostId={hostId}
       />
     </div>
   );
