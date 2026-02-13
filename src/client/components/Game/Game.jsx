@@ -4,8 +4,8 @@ import InfoPanel from "../InfoPanel/InfoPanel";
 import OpponentsPanel from "../OpponentsPanel/OpponentsPanel";
 import "./Game.css";
 
-function Game({ opponents, player, onStart, status, isHost, hostId }) {
-  const [activeTab, setActiveTab] = useState("opponents");
+function Game({ opponents, player, onStart, status, isHost, hostId, game }) {
+  const [activeTab, setActiveTab] = useState("board");
 
   return (
     <main className="game-layout">
@@ -15,6 +15,7 @@ function Game({ opponents, player, onStart, status, isHost, hostId }) {
         status={status}
         isHost={isHost}
         onStart={onStart}
+        game={game}
       />
       <InfoPanel />
 

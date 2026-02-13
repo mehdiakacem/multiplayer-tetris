@@ -4,7 +4,7 @@ import StartButton from "../StartButton/StartButton";
 import WaitingForHost from "../WaitingForHost/WaintingForHost";
 import "./Overlay.css";
 
-function Overlay({ status, isHost, onStart }) {
+function Overlay({ status, isHost, onStart, isMultiplayer, game }) {
   switch (status) {
     case GAME_STATUS.WAITING:
       return (
@@ -31,7 +31,7 @@ function Overlay({ status, isHost, onStart }) {
         <div className="overlay">
           <div className="gameOverPanel">
             <p>Game Over</p>
-            <p>Winner: Alice</p>
+            {game?.winner && <p>Winner: {game.winner.name}</p>}
             {isHost ? (
               <>
                 <p>Press RESTART to start a new game</p>
@@ -51,10 +51,13 @@ function Overlay({ status, isHost, onStart }) {
         <div className="overlay">
           <div className="gameOverPanel">
             <p className="result">You Win</p>
-            {isHost ? (
-              <StartButton onClick={onStart} restart />
-            ) : (
-              <WaitingForHost restart />
+            {isHost && (
+              <>
+                <p>Press RESTART to start a new game</p>
+                <button className="primaryButton" onClick={onStart}>
+                  RESTART
+                </button>
+              </>
             )}
           </div>
         </div>

@@ -40,11 +40,12 @@ export function useGameSocket({ room, playerName }) {
 
     socket.on("game-state", ({ game }) => {
       setGame(game);
+      console.log("Received game state:", game);
       const me = game.players.find((p) => p.id === socket.id);
       if (!me) return;
       setStatus(me.alive ? GAME_STATUS.PLAYING : GAME_STATUS.ELIMINATED);
       if (game.ended) {
-        setStatus(me.alive ? GAME_STATUS.WON : GAME_STATUS.ENDED);
+        setStatus(me.id === game.winner?.id ? GAME_STATUS.WON : GAME_STATUS.ENDED);
       }
       setOpponents(game.players.filter((p) => p.id !== socket.id));
     });

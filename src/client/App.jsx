@@ -15,6 +15,8 @@ export default function App() {
     playerName,
   });
 
+  // console.log("Game state in App.jsx:", game);
+
   const socketId = socket?.id;
   const isHost = !!socketId && socketId === hostId;
 
@@ -33,6 +35,7 @@ export default function App() {
     <div className="app">
       <Header roomName={room} status={status} isHost={isHost} onStart={handleStartClick} />
       <Game
+        game={game}
         player={player}
         opponents={opponents}
         onStart={handleStartClick}

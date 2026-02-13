@@ -23,13 +23,15 @@ const Header = ({ roomName, status, isHost, onStart }) => {
       )}
 
       {/* RIGHT: Host Button */}
-      {isHost &&
-        (status === GAME_STATUS.WAITING ||
-          status === GAME_STATUS.WON) ? (
+      {
+        isHost && status === GAME_STATUS.WAITING ? (
           <button className="primaryButton" onClick={onStart}>
             START
           </button>
-        ): (<div className="placeholder" />) /* to keep spacing consistent */}
+        ) : (
+          <div className="placeholder" />
+        ) /* to keep spacing consistent */
+      }
     </header>
   );
 };
