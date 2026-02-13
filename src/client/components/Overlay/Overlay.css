@@ -25,3 +25,8 @@
   background: rgba(255, 255, 255, 0.03);
   padding: 12px;
 }
+
+.gameOverPanel p {
+  /* font-size: 1.2rem; */
+  color: #fff;
+}

@@ -5,4 +5,7 @@
   padding: 12px;
   display: flex;
   justify-content: center;
+  /* position: relative; */
+  /* width: fit-content;
+  margin: 0 auto; */
 }

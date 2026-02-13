@@ -26,5 +26,10 @@ body,
   color: #e6edf3;
 }
 
+@media (max-width: 640px) {
+  .app {
+    padding: 12px;
+  }
+}
 
 

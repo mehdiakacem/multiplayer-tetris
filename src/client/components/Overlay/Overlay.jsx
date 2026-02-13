@@ -20,32 +20,43 @@ function Overlay({ status, isHost, onStart }) {
     case GAME_STATUS.ELIMINATED:
       return (
         <div className="overlay">
-          <p>You lost</p>
-          <p>Waiting for game to end...</p>
+          <div className="gameOverPanel">
+            <p>You’re Out</p>
+          </div>
         </div>
       );
 
     case GAME_STATUS.ENDED:
       return (
         <div className="overlay">
-            <div className="gameOverPanel">
-              <span>Game Over</span>
-              <button className="primaryButton" onClick={onStart}>
-                RESTART
-              </button>
-            </div>
+          <div className="gameOverPanel">
+            <p>Game Over</p>
+            <p>Winner: Alice</p>
+            {isHost ? (
+              <>
+                <p>Press RESTART to start a new game</p>
+                <button className="primaryButton" onClick={onStart}>
+                  RESTART
+                </button>
+              </>
+            ) : (
+              <p>Waiting for host to restart the game...</p>
+            )}
+          </div>
         </div>
       );
 
     case GAME_STATUS.WON:
       return (
         <div className="overlay">
-          <p>You won 🎉</p>
-          {isHost ? (
-            <StartButton onClick={onStart} restart />
-          ) : (
-            <WaitingForHost restart />
-          )}
+          <div className="gameOverPanel">
+            <p className="result">You Win</p>
+            {isHost ? (
+              <StartButton onClick={onStart} restart />
+            ) : (
+              <WaitingForHost restart />
+            )}
+          </div>
         </div>
       );
 
