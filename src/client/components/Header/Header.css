@@ -56,6 +56,7 @@
 }
 
 .brandName {
+  transition: filter 150ms ease;
   font-weight: 600;
   font-size: 16px;
   letter-spacing: 0.4px;
@@ -70,6 +71,10 @@
 
 .logoGroup:hover .logo {
   filter: drop-shadow(0 0 6px rgba(255, 60, 80, 0.5));
+}
+
+.logoGroup:hover .brandName {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.747));
 }
 
 @media (max-width: 480px) {

@@ -15,8 +15,6 @@ export default function App() {
     playerName,
   });
 
-  // console.log("Game state in App.jsx:", game);
-
   const socketId = socket?.id;
   const isHost = !!socketId && socketId === hostId;
 

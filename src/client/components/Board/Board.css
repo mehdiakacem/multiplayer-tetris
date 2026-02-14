@@ -1,7 +1,8 @@
 .board {
-  width: min(380px, 85vw);
+  height: min(750px, 75vh);
   aspect-ratio: 10 / 20;
   display: grid;
+  
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(20, 1fr);
   gap: 2px;
@@ -9,6 +10,8 @@
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.35);
 }
+
+
 
 /* Cells */
 .cell {

@@ -40,7 +40,6 @@ export function useGameSocket({ room, playerName }) {
 
     socket.on("game-state", ({ game }) => {
       setGame(game);
-      console.log("Received game state:", game);
       const me = game.players.find((p) => p.id === socket.id);
       if (!me) return;
       setStatus(me.alive ? GAME_STATUS.PLAYING : GAME_STATUS.ELIMINATED);

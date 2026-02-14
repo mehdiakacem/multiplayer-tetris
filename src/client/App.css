@@ -1,4 +1,8 @@
 :root {
+  /* Backgrounds */
+  --bg-main: #0b0f14; /* app background */
+  --bg-surface: #121826; /* cards / panels */
+  --bg-elevated: #1a2233; /* hover / active */
 }
 
 * {
@@ -16,14 +20,16 @@ body,
     "Segoe UI",
     Roboto,
     Arial;
+  background: #0b0f14;
 }
-
 
 .app {
   min-height: 100vh;
   padding: 16px;
   background: #0b0f14;
   color: #e6edf3;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 @media (max-width: 640px) {
@@ -31,5 +37,3 @@ body,
     padding: 12px;
   }
 }
-
-

@@ -2,17 +2,16 @@ import Board from "../Board/Board";
 import "./BoardPanel.css";
 import Overlay from "../Overlay/Overlay";
 
-function BoardPanel({ player, status, isHost, onStart, isMultiplayer, game }) {
+function BoardPanel({ player, status, isHost, onStart,  game }) {
   return (
     <section className="board-panel">
       <Board board={player?.board} activePiece={player?.currentPiece} />
-      <Overlay
+      {/* <Overlay
         status={status}
         isHost={isHost}
         onStart={onStart}
-        isMultiplayer={isMultiplayer}
         game={game}
-      />
+      /> */}
     </section>
   );
 }

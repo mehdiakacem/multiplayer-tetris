@@ -1,7 +1,10 @@
 .opponents {
-  overflow: scroll;
-  height: 70vh;
-}
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  /* max-height: 520px; */
+  /* height: min(690px, 67vh); */
+  }
 
 .opponent {
   display: flex;

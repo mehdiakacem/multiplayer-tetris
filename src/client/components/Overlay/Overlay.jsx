@@ -1,85 +1,94 @@
+import { Link } from "react-router";
 import { GAME_STATUS } from "../../constants/gameStatus";
 import JoinGameForm from "../JoinGameForm/JoinGameForm";
-import StartButton from "../StartButton/StartButton";
-import WaitingForHost from "../WaitingForHost/WaintingForHost";
 import "./Overlay.css";
 
-function Overlay({ status, isHost, onStart, isMultiplayer, game }) {
-  switch (status) {
-    case GAME_STATUS.WAITING:
-      return (
-        <div className="overlay">
-          {isHost ? (
-            <span>Press START to begin the game</span>
-          ) : (
-            <WaitingForHost />
-          )}
-        </div>
-      );
-
-    case GAME_STATUS.ELIMINATED:
-      return (
-        <div className="overlay">
-          <div className="gameOverPanel">
-            <p>You’re Out</p>
-          </div>
-        </div>
-      );
-
-    case GAME_STATUS.ENDED:
-      return (
-        <div className="overlay">
-          <div className="gameOverPanel">
-            <p>Game Over</p>
-            {game?.winner && <p>Winner: {game.winner.name}</p>}
-            {isHost ? (
-              <>
-                <p>Press RESTART to start a new game</p>
-                <button className="primaryButton" onClick={onStart}>
-                  RESTART
-                </button>
-              </>
-            ) : (
-              <p>Waiting for host to restart the game...</p>
-            )}
-          </div>
-        </div>
-      );
-
-    case GAME_STATUS.WON:
-      return (
-        <div className="overlay">
-          <div className="gameOverPanel">
-            <p className="result">You Win</p>
-            {isHost && (
-              <>
-                <p>Press RESTART to start a new game</p>
-                <button className="primaryButton" onClick={onStart}>
-                  RESTART
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      );
-
-    case GAME_STATUS.STARTED:
-      return (
-        <div className="overlay">
-          <p>Game already started</p>
-        </div>
-      );
-
-    case null:
-      return (
-        <div className="overlay">
-          <JoinGameForm />
-        </div>
-      );
-
-    default:
-      return null;
+function Overlay({ status, isHost, onStart, game }) {
+  if (status === null) {
+    return (
+      <div className="overlay">
+        <JoinGameForm />
+      </div>
+    );
   }
+
+  const screens = {
+    [GAME_STATUS.WAITING]: () => (
+      <OverlayShell>
+        {isHost ? (
+          <span>Press START to begin the game</span>
+        ) : (
+          <>
+            <p>Waiting for host to start</p>
+            <LeaveRoomButton onClick={onStart} variant="secondaryButton" />
+          </>
+        )}
+      </OverlayShell>
+    ),
+
+    [GAME_STATUS.ELIMINATED]: () => (
+      <OverlayShell>
+        <p>ELIMINATED</p>
+      </OverlayShell>
+    ),
+
+    [GAME_STATUS.ENDED]: () => (
+      <OverlayShell>
+        <p>GAME OVER</p>
+        {game?.winner && <p>Winner: {game.winner.name}</p>}
+        <RestartOrWait isHost={isHost} onStart={onStart} />
+      </OverlayShell>
+    ),
+
+    [GAME_STATUS.WON]: () => (
+      <OverlayShell>
+        <p className="result">YOU WIN</p>
+        <RestartOrWait isHost={isHost} onStart={onStart} />
+      </OverlayShell>
+    ),
+
+    [GAME_STATUS.STARTED]: () => (
+      <div className="overlay">
+        <p>Game already started</p>
+      </div>
+    ),
+  };
+
+  return (screens[status] ?? (() => null))();
+}
+
+function OverlayShell({ children }) {
+  return (
+    <div className="overlay">
+      <div className="gameOverPanel">{children}</div>
+    </div>
+  );
+}
+
+function RestartOrWait({ isHost, onStart }) {
+  return isHost ? (
+    <>
+      <p>Press RESTART to start a new game</p>
+      <button className="primaryButton" onClick={onStart}>
+        RESTART
+      </button>
+    </>
+  ) : (
+    <>
+      <p>Waiting for host to restart...</p>
+      <LeaveRoomButton onClick={onStart} variant="primaryButton" />
+    </>
+  );
+}
+
+function LeaveRoomButton({ onClick, variant }) {
+  return (
+    <Link to="/">
+      <button className={variant} onClick={onClick}>
+        Leave Room
+      </button>
+    </Link>
+  );
 }
 
 export default Overlay;
