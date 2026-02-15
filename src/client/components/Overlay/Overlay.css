@@ -1,6 +1,6 @@
 .overlay {
   position: absolute;
-  width: min(380px, 85vw);
+  height: min(750px, 75vh);
   aspect-ratio: 10 / 20;
 
   display: flex;

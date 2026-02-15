@@ -6,12 +6,12 @@ function BoardPanel({ player, status, isHost, onStart,  game }) {
   return (
     <section className="board-panel">
       <Board board={player?.board} activePiece={player?.currentPiece} />
-      {/* <Overlay
+      <Overlay
         status={status}
         isHost={isHost}
         onStart={onStart}
         game={game}
-      /> */}
+      />
     </section>
   );
 }

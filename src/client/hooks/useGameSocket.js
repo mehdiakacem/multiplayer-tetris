@@ -50,6 +50,7 @@ export function useGameSocket({ room, playerName }) {
     });
 
     return () => {
+      socket.removeAllListeners();
       socket.disconnect();
       setOpponents([]);
       setHostId(null);
