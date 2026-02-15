@@ -1,5 +1,5 @@
 .opponents {
-  overflow-y: scroll;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   /* max-height: 520px; */
@@ -52,4 +52,24 @@
 
 .spectrum-fill.eliminated {
   background: rgba(95, 95, 95, 0.98);
+}
+
+.opponents {
+  overflow-y: auto;
+
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* IE / Edge (legacy) */
+  -ms-overflow-style: none;
+  
+}
+
+/* Chrome, Safari, Edge */
+.opponents::-webkit-scrollbar {
+  display: none;
+}
+
+.opponents {
+  mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
 }
