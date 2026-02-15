@@ -1,66 +1,52 @@
 .board {
+  height: min(750px, 75vh);
+  aspect-ratio: 10 / 20;
   display: grid;
+  
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(20, 1fr);
-
-  width: 300px;
-  height: 600px;
-
-  background: #111;
-  border: 2px solid #444;
+  gap: 2px;
+  padding: 6px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.35);
 }
 
+
+
+/* Cells */
 .cell {
-  border: 1px solid #222;
-  background: #000;
-}
-
-.cyan {
-  background: cyan;
-}
-.yellow {
-  background: yellow;
-}
-.purple {
-  background: purple;
-}
-.green {
-  background: green;
-}
-.red {
-  background: red;
-}
-.blue {
-  background: blue;
-}
-.orange {
-  background: orange;
-}
-.gray {
-  background: gray;
-}
-
-
-
-
-
-.start-form a {
-  display: block;
-  padding: 10px;
-  font-size: 16px;    
-  font-weight: bolder;
-  border: none;
   border-radius: 4px;
-  background-color: darkgreen;
-  color: #fff;
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.start-form a:hover {
-  background-color: green;
+.cell.filled {
+  border-radius: 4px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.12),
+    inset 0 -2px 4px rgba(0,0,0,0.25);
 }
 
-@media screen and (max-width: 768px) {
+.cyan   { background: rgba(0, 180, 200, 0.95); }
+.yellow { background: rgba(240, 180, 0, 0.95); }
+.purple { background: rgba(140, 80, 220, 0.95); }
+.green  { background: rgba(0, 170, 110, 0.95); }
+.red    { background: rgba(255, 60, 80, 0.95); }
+.blue   { background: rgba(50, 110, 230, 0.95); }
+.orange { background: rgba(230, 120, 0, 0.95); }
+
+
+.gray {
+  background: linear-gradient(
+    145deg,
+    rgba(130, 140, 160, 0.95),
+    rgba(85, 95, 115, 0.95)
+  );
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.15),
+    inset 0 -2px 4px rgba(0,0,0,0.4);
+}
+
+/* @media screen and (max-width: 768px) {
   .board {
     width: 260px;
     height: 520px;
@@ -72,4 +58,4 @@
     width: 240px;
     height: 480px;
   }
-}
+} */

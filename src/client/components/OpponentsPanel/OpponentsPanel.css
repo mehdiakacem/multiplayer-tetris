@@ -1,0 +1,10 @@
+.opponents-panel {
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--bg-surface);
+  padding: 12px;
+  max-height: min(790px, 79vh);
+  /* height: 100%; */
+  display: flex;
+  flex-direction: column;
+}

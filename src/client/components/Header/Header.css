@@ -1,0 +1,83 @@
+.header {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  backdrop-filter: blur(10px);
+  height: 66px;
+}
+
+.rtLogo {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg,
+    rgba(255, 50, 70, 0.98),
+    rgba(200, 20, 40, 0.98)
+  );
+
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 10px 24px rgba(0, 0, 0, 0.35),
+    0 6px 18px rgba(255, 60, 80, 0.18);
+
+  user-select: none;
+}
+
+.rtLogo__text {
+  color: rgba(255, 255, 255, 0.96);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.logoGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.logo {
+  transition: filter 150ms ease;
+  gap: 2px;
+  display: flex;
+}
+
+.brandName {
+  transition: filter 150ms ease;
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: 0.4px;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.room-info {
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+.logoGroup:hover .logo {
+  filter: drop-shadow(0 0 6px rgba(255, 60, 80, 0.5));
+}
+
+.logoGroup:hover .brandName {
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.747));
+}
+
+@media (max-width: 480px) {
+  .brandName {
+    display: none;
+  }
+}

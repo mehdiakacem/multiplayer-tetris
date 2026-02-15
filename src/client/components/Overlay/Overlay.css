@@ -1,0 +1,32 @@
+.overlay {
+  position: absolute;
+  height: min(750px, 75vh);
+  aspect-ratio: 10 / 20;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(5, 8, 12, 0.75);
+  backdrop-filter: blur(6px);
+
+  z-index: 10;
+
+  border-radius: 12px;
+}
+
+.gameOverPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* gap: 12px; */
+  border: 1px solid var(--border-subtle);
+  border-radius: 14px;
+  background: var(--bg-surface);
+  padding: 12px;
+}
+
+.gameOverPanel p {
+  /* font-size: 1.2rem; */
+  color: #fff;
+}

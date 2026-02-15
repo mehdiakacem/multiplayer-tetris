@@ -1,0 +1,89 @@
+.game-layout {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 280px minmax(380px, 1fr) 280px;
+  gap: 14px;
+  align-items: start;
+}
+
+.mobile-drawer {
+  display: none;
+}
+
+@media (max-width: 960px) {
+  .game-layout {
+    grid-template-columns: 1fr;
+  }
+  .panel {
+    order: 2;
+  }
+  .board-panel {
+    order: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .game-layout {
+    gap: 10px;
+  }
+
+  .panel,
+  .opponents-panel {
+    display: none;
+  }
+
+  .mobile-drawer .panel {
+    display: block;
+  }
+
+  .mobile-drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    /* padding: 12px; */
+    /* background: rgba(0, 0, 0, 0.2); */
+    border-radius: 8px;
+    border-top: 2px solid rgba(255, 255, 255, 0.1);
+    grid-column: 1;
+  }
+
+  .drawer-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .tab {
+    flex: 1;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .tab:hover {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  .tab.active {
+    color: #fff;
+    border-bottom-color: rgba(200, 20, 40, 0.98);
+  }
+
+  .drawer-content {
+    overflow-y: auto;
+    /* max-height: 300px; */
+  }
+
+  .board-panel {
+    display: none;
+  }
+
+  .mobile-drawer .board-panel {
+    display: flex;
+  }
+}

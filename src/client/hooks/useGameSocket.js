@@ -9,6 +9,9 @@ export function useGameSocket({ room, playerName }) {
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
+    if (!room || !playerName) {
+      return;
+    }
     socket.connect();
 
     socket.on("connect", () => {
@@ -41,14 +44,18 @@ export function useGameSocket({ room, playerName }) {
       if (!me) return;
       setStatus(me.alive ? GAME_STATUS.PLAYING : GAME_STATUS.ELIMINATED);
       if (game.ended) {
-        setStatus(me.alive ? GAME_STATUS.WON : GAME_STATUS.ENDED);
+        setStatus(me.id === game.winner?.id ? GAME_STATUS.WON : GAME_STATUS.ENDED);
       }
       setOpponents(game.players.filter((p) => p.id !== socket.id));
     });
 
     return () => {
-      socket.disconnect();
       socket.removeAllListeners();
+      socket.disconnect();
+      setOpponents([]);
+      setHostId(null);
+      setGame(null);
+      setStatus(null);
     };
   }, [room, playerName]);
   return {

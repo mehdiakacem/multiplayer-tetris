@@ -1,23 +1,40 @@
-@media screen and (max-width: 480px) {
-  .opponents {
-    order: 2;
+.opponents {
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  /* max-height: 520px; */
+  /* height: min(690px, 67vh); */
   }
+
+.opponent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 5px;
+  border-bottom: 1px solid #333;
 }
 
-.opponents {
-  width: 120px;
-  height: 600px;
-  overflow: scroll;
-  margin-top: 23px;
+.opponent-name.eliminated {
+  color: #888; 
+  text-decoration: line-through;
+}
+
+.opponent-name {
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
 }
 
 .spectrum {
   display: flex;
-  gap: 1px;
-  height: 120px;
-  width: 100px;
-  background: #444;
-  border: 1px solid black;
+  gap:1px;
+  height: 140px;
+  width: 120px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  border-radius: 4px;
 }
 
 .spectrum-col {
@@ -28,6 +45,11 @@
 
 .spectrum-fill {
   width: 100%;
-  background: red;
+  background: rgba(170, 21, 39, 0.98);
+  border-radius: 1px;
   transition: height 0.1s linear;
+}
+
+.spectrum-fill.eliminated {
+  background: rgba(95, 95, 95, 0.98);
 }

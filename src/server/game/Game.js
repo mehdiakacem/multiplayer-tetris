@@ -15,6 +15,7 @@ export default class Game {
 
     this.players = new Map();
     this.hostId = null;
+    this.winner = null;
 
     this.started = false;
     this.ended = false;
@@ -148,6 +149,8 @@ export default class Game {
     this.started = true;
     this.ended = false;
 
+    this.winnerId = null;
+
     this.resetPlayers();
     this.resetBag();
     this.spawnPieceForAll();
@@ -194,6 +197,7 @@ export default class Game {
     const alivePlayers = [...this.players.values()].filter((p) => p.alive);
 
     if (alivePlayers.length <= 1) {
+      this.winner = alivePlayers[0] || null;
       this.endGame();
     }
   }
@@ -204,6 +208,7 @@ export default class Game {
       started: this.started,
       ended: this.ended,
       hostId: this.hostId,
+      winner: this.winner,
       players: [...this.players.values()].map((p) => p.toPublicData()),
     };
   }

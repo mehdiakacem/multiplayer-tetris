@@ -1,12 +1,12 @@
-import BoardSection from "../../components/BoardSection/BoardSection.jsx";
-import Opponents from "../../components/Opponents/Opponents.jsx";
+import "./App.css";
+import Game from "./components/Game/Game";
+import Header from "./components/Header/Header";
+import { useGameSocket } from "./hooks/useGameSocket";
+import { useKeyboardInput } from "./hooks/useKeyboardInput";
 import { useParams, useNavigate } from "react-router";
-import "./GamePage.css";
-import { useGameSocket } from "../../hooks/useGameSocket.js";
-import { useKeyboardInput } from "../../hooks/useKeyboardInput.js";
 import { useCallback } from "react";
 
-function GamePage() {
+export default function App() {
   const { room, playerName } = useParams();
   const navigate = useNavigate();
 
@@ -29,24 +29,18 @@ function GamePage() {
   );
 
   const player = game?.players?.find((p) => p.id === socketId);
-  const safeOpponents = opponents ?? [];
-
   return (
-    <>
-      <span>
-        {playerName} {isHost && "(Host)"}
-      </span>
-
-      <BoardSection
+    <div className="app">
+      <Header roomName={room} status={status} isHost={isHost} onStart={handleStartClick} />
+      <Game
+        game={game}
         player={player}
+        opponents={opponents}
+        onStart={handleStartClick}
         status={status}
         isHost={isHost}
-        onRestart={handleStartClick}
+        hostId={hostId}
       />
-
-      <Opponents opponents={safeOpponents} hostId={hostId} />
-    </>
+    </div>
   );
 }
-
-export default GamePage;
