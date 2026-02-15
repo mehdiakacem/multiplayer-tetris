@@ -51,6 +51,7 @@ export function useGameSocket({ room, playerName }) {
         setStatus(me.id === game.winner?.id ? GAME_STATUS.WON : GAME_STATUS.ENDED);
       }
       setOpponents(game.players.filter((p) => p.id !== socket.id));
+      setHostId(game.hostId);
     });
 
     return () => {
