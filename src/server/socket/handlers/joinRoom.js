@@ -2,6 +2,12 @@ import Player from "../../game/Player.js";
 
 export function handleJoinRoom({ socket, io, gameManager }) {
   return ({ room, playerName }) => {
+    if (room.length > 10 || playerName.length > 10) {
+      socket.emit("join-denied", {
+        reason: "Room and player names must be at most 10 characters long",
+      });
+      return;
+    }
     const game = gameManager.getOrCreateGame(room);
 
     if (game.started) {

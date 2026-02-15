@@ -5,7 +5,7 @@ import OpponentsPanel from "../OpponentsPanel/OpponentsPanel";
 import "./Game.css";
 
 function Game({ opponents, player, onStart, status, isHost, hostId, game }) {
-  const [activeTab, setActiveTab] = useState("board");
+  const [activeTab, setActiveTab] = useState("game");
 
   return (
     <main className="game-layout">
@@ -28,10 +28,10 @@ function Game({ opponents, player, onStart, status, isHost, hostId, game }) {
             Opponents
           </button>
           <button
-            className={`tab ${activeTab === "board" ? "active" : ""}`}
-            onClick={() => setActiveTab("board")}
+            className={`tab ${activeTab === "game" ? "active" : ""}`}
+            onClick={() => setActiveTab("game")}
           >
-            Board
+            Game
           </button>
           <button
             className={`tab ${activeTab === "info" ? "active" : ""}`}
@@ -49,7 +49,7 @@ function Game({ opponents, player, onStart, status, isHost, hostId, game }) {
             />
           )}
           {activeTab === "info" && <InfoPanel />}
-          {activeTab === "board" && (
+          {activeTab === "game" && (
             <BoardPanel
               player={player}
               status={status}

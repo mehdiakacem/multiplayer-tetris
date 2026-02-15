@@ -52,6 +52,12 @@ function Overlay({ status, isHost, onStart, game }) {
         <p>Game already started</p>
       </div>
     ),
+
+    [GAME_STATUS.DENIED]: () => (
+      <div className="overlay">
+        <p>Room and player names must be at most 10 characters long</p>
+      </div>
+    ),
   };
 
   return (screens[status] ?? (() => null))();
