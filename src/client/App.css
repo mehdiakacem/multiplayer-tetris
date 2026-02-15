@@ -1,8 +1,15 @@
 :root {
   /* Backgrounds */
   --bg-main: #0b0f14; /* app background */
-  --bg-surface: #121826; /* cards / panels */
-  --bg-elevated: #1a2233; /* hover / active */
+  --bg-surface: rgba(255, 255, 255, 0.03); /* cards / panels */
+
+  /* Borders */
+  --border-subtle: rgba(255, 255, 255, 0.08);
+
+  /* Text */
+  --text-primary: #e6edf3; /* main text */
+  --text-secondary: #9aa4bf; /* labels, hints */
+  --text-muted: #6b7280; /* very subtle */
 }
 
 * {
@@ -12,7 +19,7 @@
 body,
 #root {
   margin: 0;
-  height: 100%;
+  /* height: 100%; */
   font-family:
     Inter,
     system-ui,
@@ -20,14 +27,13 @@ body,
     "Segoe UI",
     Roboto,
     Arial;
-  background: #0b0f14;
+  background: var(--bg-main);
 }
 
 .app {
   min-height: 100vh;
   padding: 16px;
-  background: #0b0f14;
-  color: #e6edf3;
+  color: var(--text-primary);
   max-width: 1200px;
   margin: 0 auto;
 }

@@ -46,22 +46,6 @@
     inset 0 -2px 4px rgba(0,0,0,0.4);
 }
 
-.start-form a {
-  display: block;
-  padding: 10px;
-  font-size: 16px;
-  font-weight: bolder;
-  border: none;
-  border-radius: 4px;
-  background-color: darkgreen;
-  color: #fff;
-  cursor: pointer;
-}
-
-.start-form a:hover {
-  background-color: green;
-}
-
 /* @media screen and (max-width: 768px) {
   .board {
     width: 260px;
