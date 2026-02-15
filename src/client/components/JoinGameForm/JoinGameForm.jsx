@@ -28,6 +28,7 @@ export default function JoinGameForm() {
         onChange={(e) => setPlayerName(e.target.value)}
         className="input"
         maxLength={10}
+        id="playerName"
       />
 
       <input
@@ -37,6 +38,7 @@ export default function JoinGameForm() {
         onChange={(e) => setRoom(e.target.value)}
         className="input"
         maxLength={10}
+        id="roomName"
       />
 
       <button
