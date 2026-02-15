@@ -80,4 +80,10 @@
   .brandName {
     display: none;
   }
+
+  .header {
+    padding: 10px 12px;
+    gap: 8px;
+    height: 55px;
+  }
 }

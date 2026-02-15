@@ -16,7 +16,7 @@ const Header = ({ roomName, status, isHost, onStart }) => {
       </Link>
 
       {/* CENTER: Room Info */}
-      {roomName && (
+      {roomName && status !== GAME_STATUS.DENIED && (
         <span className="room-info">
           <strong>Room:</strong> {roomName} · <span>{status}</span>
         </span>

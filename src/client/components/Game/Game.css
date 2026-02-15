@@ -10,6 +10,12 @@
   display: none;
 }
 
+@media (max-width: 640px) {
+  .game-layout {
+    margin-top: 10px;
+  }
+}
+
 @media (max-width: 960px) {
   .game-layout {
     grid-template-columns: 1fr;
@@ -22,7 +28,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 960px) {
   .game-layout {
     gap: 10px;
   }
@@ -34,6 +40,10 @@
 
   .mobile-drawer .panel {
     display: block;
+  }
+
+  .mobile-drawer .opponents-panel {
+    display: flex;
   }
 
   .mobile-drawer {
@@ -75,8 +85,8 @@
   }
 
   .drawer-content {
-    overflow-y: auto;
-    /* max-height: 300px; */
+    /* overflow: hidden;
+    height: 100%; */
   }
 
   .board-panel {

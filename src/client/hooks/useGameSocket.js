@@ -24,8 +24,12 @@ export function useGameSocket({ room, playerName }) {
       setStatus(GAME_STATUS.WAITING);
     });
 
-    socket.on("join-denied", () => {
-      setStatus(GAME_STATUS.STARTED);
+    socket.on("join-denied", ({ reason }) => {
+      if (reason === "Game already started") {
+        setStatus(GAME_STATUS.STARTED);
+      } else {
+        setStatus(GAME_STATUS.DENIED);
+      }
     });
 
     socket.on("player-left", ({ id, hostId }) => {
