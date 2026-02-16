@@ -198,6 +198,9 @@ export default class Game {
 
     if (alivePlayers.length <= 1) {
       this.winner = alivePlayers[0] || null;
+      if (this.winner) {
+        this.hostId = this.winner.id;
+      }
       this.endGame();
     }
   }

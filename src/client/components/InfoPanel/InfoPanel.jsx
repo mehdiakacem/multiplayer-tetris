@@ -1,9 +1,8 @@
-import Panel from "../Panel/Panel";
 import "./InfoPanel.css";
 
 const InfoPanel = () => {
   return (
-    <Panel>
+    <aside className="panel">
       {/* <h3>Next Piece</h3>
 
       <div className="next-piece">
@@ -26,7 +25,7 @@ const InfoPanel = () => {
         <br />
         Space Hard drop
       </p>
-    </Panel>
+    </aside>
   );
 };
 

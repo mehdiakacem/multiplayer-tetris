@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { socket } from "../socket";
+import { createGameSocketMiddleware } from "../middleware/gameSocketMiddleware";
 import { GAME_STATUS } from "../constants/gameStatus";
 
 export function useGameSocket({ room, playerName }) {
@@ -8,23 +9,30 @@ export function useGameSocket({ room, playerName }) {
   const [game, setGame] = useState(null);
   const [status, setStatus] = useState(null);
 
+  // Create middleware instance (memoized)
+  const middleware = useMemo(
+    () => createGameSocketMiddleware(socket),
+    []
+  );
+
   useEffect(() => {
     if (!room || !playerName) {
       return;
     }
-    socket.connect();
 
-    socket.on("connect", () => {
-      socket.emit("join-room", { room, playerName });
+    middleware.connect();
+
+    middleware.on("connect", () => {
+      middleware.joinRoom(room, playerName);
     });
 
-    socket.on("player-joined", ({ players, hostId }) => {
-      setOpponents(players.filter((p) => p.id !== socket.id));
+    middleware.on("player-joined", ({ players, hostId }) => {
+      setOpponents(players.filter((p) => p.id !== middleware.getId()));
       setHostId(hostId);
       setStatus(GAME_STATUS.WAITING);
     });
 
-    socket.on("join-denied", ({ reason }) => {
+    middleware.on("join-denied", ({ reason }) => {
       if (reason === "Game already started") {
         setStatus(GAME_STATUS.STARTED);
       } else {
@@ -32,38 +40,39 @@ export function useGameSocket({ room, playerName }) {
       }
     });
 
-    socket.on("player-left", ({ id, hostId }) => {
+    middleware.on("player-left", ({ id, hostId }) => {
       setOpponents((prev) => prev.filter((p) => p.id !== id));
       setHostId(hostId);
     });
 
-    socket.on("game-started", ({ game }) => {
+    middleware.on("game-started", ({ game }) => {
       setGame(game);
       setStatus(GAME_STATUS.PLAYING);
     });
 
-    socket.on("game-state", ({ game }) => {
+    middleware.on("game-state", ({ game }) => {
       setGame(game);
-      const me = game.players.find((p) => p.id === socket.id);
+      const me = game.players.find((p) => p.id === middleware.getId());
       if (!me) return;
       setStatus(me.alive ? GAME_STATUS.PLAYING : GAME_STATUS.ELIMINATED);
       if (game.ended) {
         setStatus(me.id === game.winner?.id ? GAME_STATUS.WON : GAME_STATUS.ENDED);
       }
-      setOpponents(game.players.filter((p) => p.id !== socket.id));
+      setOpponents(game.players.filter((p) => p.id !== middleware.getId()));
+      setHostId(game.hostId);
     });
 
     return () => {
-      socket.removeAllListeners();
-      socket.disconnect();
+      middleware.cleanup();
       setOpponents([]);
       setHostId(null);
       setGame(null);
       setStatus(null);
     };
-  }, [room, playerName]);
+  }, [room, playerName, middleware]);
+
   return {
-    socket,
+    middleware,
     game,
     opponents,
     hostId,

@@ -10,28 +10,33 @@ export default function App() {
   const { room, playerName } = useParams();
   const navigate = useNavigate();
 
-  const { socket, game, opponents, hostId, status } = useGameSocket({
+  const { middleware, game, opponents, hostId, status } = useGameSocket({
     room,
     playerName,
   });
 
-  const socketId = socket?.id;
+  const socketId = middleware?.getId();
   const isHost = !!socketId && socketId === hostId;
 
   useKeyboardInput({
-    onInput: (action) => socket?.emit("player-input", { action }),
+    onInput: (action) => middleware?.sendPlayerInput(action),
     onEscape: () => navigate("/"),
   });
 
   const handleStartClick = useCallback(
-    () => socket?.emit("start-game"),
-    [socket],
+    () => middleware?.startGame(),
+    [middleware],
   );
 
   const player = game?.players?.find((p) => p.id === socketId);
   return (
     <div className="app">
-      <Header roomName={room} status={status} isHost={isHost} onStart={handleStartClick} />
+      <Header
+        roomName={room}
+        status={status}
+        isHost={isHost}
+        onStart={handleStartClick}
+      />
       <Game
         game={game}
         player={player}
