@@ -1,5 +1,6 @@
 {
-  "name": "red-tetris",
+  "name": "multiplayer-tetris",
+  "description": "Real-time multiplayer Tetris built with React, Express, and Socket.IO.",
   "private": true,
   "version": "0.0.0",
   "type": "module",
