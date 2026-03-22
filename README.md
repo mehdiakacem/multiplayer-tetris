@@ -79,7 +79,3 @@ src/
   server/   Express server, Socket.IO handlers, and game logic
   test/     Test utilities
 ```
-
-## Suggested GitHub Description
-
-`Real-time multiplayer Tetris built with React, Express, and Socket.IO.`
