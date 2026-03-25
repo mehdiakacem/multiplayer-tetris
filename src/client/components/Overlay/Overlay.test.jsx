@@ -66,6 +66,23 @@ describe("Overlay", () => {
     expect(screen.getByText(/leave room/i)).toBeInTheDocument();
   });
 
+  it("does not call onStart when non-host clicks leave room while waiting", () => {
+    const mockOnStart = vi.fn();
+
+    renderWithRouter(
+      <Overlay
+        status={GAME_STATUS.WAITING}
+        isHost={false}
+        onStart={mockOnStart}
+        game={null}
+      />
+    );
+
+    fireEvent.click(screen.getByText(/leave room/i));
+
+    expect(mockOnStart).not.toHaveBeenCalled();
+  });
+
   // Test 5: ELIMINATED status shows eliminated message
   it("shows eliminated message when player is eliminated", () => {
     renderWithRouter(
@@ -138,6 +155,23 @@ describe("Overlay", () => {
     );
 
     expect(screen.getByText(/waiting for host to restart/i)).toBeInTheDocument();
+  });
+
+  it("does not call onStart when non-host clicks leave room after game end", () => {
+    const mockOnStart = vi.fn();
+
+    renderWithRouter(
+      <Overlay
+        status={GAME_STATUS.ENDED}
+        isHost={false}
+        onStart={mockOnStart}
+        game={null}
+      />
+    );
+
+    fireEvent.click(screen.getByText(/leave room/i));
+
+    expect(mockOnStart).not.toHaveBeenCalled();
   });
 
   // Test 10: WON status shows you win message

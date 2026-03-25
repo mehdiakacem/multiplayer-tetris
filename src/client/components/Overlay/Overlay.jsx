@@ -20,7 +20,7 @@ function Overlay({ status, isHost, onStart, game }) {
         ) : (
           <>
             <p>Waiting for host to start</p>
-            <LeaveRoomButton onClick={onStart} variant="secondaryButton" />
+            <LeaveRoomButton variant="secondaryButton" />
           </>
         )}
       </OverlayShell>
@@ -82,15 +82,15 @@ function RestartOrWait({ isHost, onStart }) {
   ) : (
     <>
       <p>Waiting for host to restart...</p>
-      <LeaveRoomButton onClick={onStart} variant="primaryButton" />
+      <LeaveRoomButton variant="primaryButton" />
     </>
   );
 }
 
-function LeaveRoomButton({ onClick, variant }) {
+function LeaveRoomButton({ variant }) {
   return (
     <Link to="/">
-      <button className={variant} onClick={onClick}>
+      <button className={variant}>
         Leave Room
       </button>
     </Link>
