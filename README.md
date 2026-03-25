@@ -39,10 +39,16 @@ Create a local `.env` file from the example:
 cp .env.example .env
 ```
 
-The default setup uses:
+The app reads these variables:
 
-- Client: `http://localhost:5173`
-- Server: `http://localhost:3000`
+- `PORT`: Express server port. Default: `3000`
+- `CLIENT_URL`: allowed browser origin for Socket.IO CORS. Default: `http://localhost:5173`
+- `VITE_SOCKET_SERVER_URL`: Socket.IO server URL used by the Vite client. Default: `http://localhost:3000`
+
+The default local setup uses:
+
+- Client origin: `http://localhost:5173`
+- Server URL: `http://localhost:3000`
 
 ### Run the app
 
