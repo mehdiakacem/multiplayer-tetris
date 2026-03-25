@@ -22,8 +22,7 @@ describe("handleDisconnect", () => {
     const gameA = {
       room: "room-a",
       hostId: "h1",
-      players: new Map([["someone-else", {}]]),
-      removePlayer: vi.fn(),
+      handlePlayerDisconnect: vi.fn(() => false),
       isEmpty: vi.fn(() => false),
     };
 
@@ -32,7 +31,7 @@ describe("handleDisconnect", () => {
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
 
-    expect(gameA.removePlayer).not.toHaveBeenCalled();
+    expect(gameA.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
     expect(io.to).not.toHaveBeenCalled();
     expect(emit).not.toHaveBeenCalled();
     expect(gameManager.removeGame).not.toHaveBeenCalled();
@@ -42,8 +41,9 @@ describe("handleDisconnect", () => {
     const gameA = {
       room: "room-a",
       hostId: "h1",
-      players: new Map([["s1", {}]]),
-      removePlayer: vi.fn(),
+      started: false,
+      ended: false,
+      handlePlayerDisconnect: vi.fn(() => true),
       isEmpty: vi.fn(() => false),
     };
 
@@ -52,7 +52,7 @@ describe("handleDisconnect", () => {
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
 
-    expect(gameA.removePlayer).toHaveBeenCalledWith("s1");
+    expect(gameA.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
 
     expect(io.to).toHaveBeenCalledWith("room-a");
     expect(emit).toHaveBeenCalledWith("player-left", {
@@ -67,8 +67,9 @@ describe("handleDisconnect", () => {
     const gameA = {
       room: "room-a",
       hostId: "h1",
-      players: new Map([["s1", {}]]),
-      removePlayer: vi.fn(),
+      started: false,
+      ended: false,
+      handlePlayerDisconnect: vi.fn(() => true),
       isEmpty: vi.fn(() => true), // 👈 empty now
     };
 
@@ -77,7 +78,7 @@ describe("handleDisconnect", () => {
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
 
-    expect(gameA.removePlayer).toHaveBeenCalledWith("s1");
+    expect(gameA.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
     expect(gameManager.removeGame).toHaveBeenCalledWith("room-a");
   });
 
@@ -94,16 +95,18 @@ describe("handleDisconnect", () => {
     const gameA = {
       room: "room-a",
       hostId: "h1",
-      players: new Map([["s1", {}]]),
-      removePlayer: vi.fn(),
+      started: false,
+      ended: false,
+      handlePlayerDisconnect: vi.fn(() => true),
       isEmpty: vi.fn(() => false),
     };
 
     const gameB = {
       room: "room-b",
       hostId: "h2",
-      players: new Map([["s1", {}]]),
-      removePlayer: vi.fn(),
+      started: false,
+      ended: false,
+      handlePlayerDisconnect: vi.fn(() => true),
       isEmpty: vi.fn(() => false),
     };
 
@@ -112,10 +115,48 @@ describe("handleDisconnect", () => {
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
 
-    expect(gameA.removePlayer).toHaveBeenCalledWith("s1");
-    expect(gameB.removePlayer).toHaveBeenCalledWith("s1");
+    expect(gameA.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
+    expect(gameB.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
 
     expect(emitA).toHaveBeenCalledWith("player-left", { id: "s1", hostId: "h1" });
     expect(emitB).toHaveBeenCalledWith("player-left", { id: "s1", hostId: "h2" });
+  });
+
+  it("emits updated game-state when a disconnect ends an active game", () => {
+    const emitRoomA = vi.fn();
+
+    io.to = vi.fn(() => ({ emit: emitRoomA }));
+
+    const publicState = {
+      room: "room-a",
+      started: false,
+      ended: true,
+      hostId: "s2",
+      winner: { id: "s2", name: "Bob" },
+      players: [{ id: "s2", name: "Bob", alive: true }],
+    };
+
+    const gameA = {
+      room: "room-a",
+      hostId: "s2",
+      started: false,
+      ended: true,
+      handlePlayerDisconnect: vi.fn(() => true),
+      getPublicState: vi.fn(() => publicState),
+      isEmpty: vi.fn(() => false),
+    };
+
+    gameManager.getAllGames = vi.fn(() => [gameA]);
+
+    const handler = handleDisconnect({ socket, io, gameManager });
+    handler();
+
+    expect(emitRoomA).toHaveBeenNthCalledWith(1, "player-left", {
+      id: "s1",
+      hostId: "s2",
+    });
+    expect(emitRoomA).toHaveBeenNthCalledWith(2, "game-state", {
+      game: publicState,
+    });
   });
 });

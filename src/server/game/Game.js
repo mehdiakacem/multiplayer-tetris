@@ -138,6 +138,19 @@ export default class Game {
     }
   }
 
+  handlePlayerDisconnect(socketId) {
+    if (!this.players.has(socketId)) return false;
+
+    const wasActiveGame = this.started && !this.ended;
+    this.removePlayer(socketId);
+
+    if (wasActiveGame) {
+      this.resolveWinnerAfterDeparture();
+    }
+
+    return true;
+  }
+
   isEmpty() {
     return this.players.size === 0;
   }
@@ -194,6 +207,10 @@ export default class Game {
 
     player.kill();
 
+    this.resolveWinnerAfterDeparture();
+  }
+
+  resolveWinnerAfterDeparture() {
     const alivePlayers = [...this.players.values()].filter((p) => p.alive);
 
     if (alivePlayers.length <= 1) {

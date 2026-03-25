@@ -35,6 +35,16 @@ describe("Game", () => {
       game.removePlayer("p2");
       expect(game.isEmpty()).toBe(true);
     });
+
+    test("disconnecting during an active game ends the game and declares the remaining player the winner", () => {
+      game.startGame("p1");
+
+      expect(game.handlePlayerDisconnect("p1")).toBe(true);
+      expect(game.ended).toBe(true);
+      expect(game.started).toBe(false);
+      expect(game.winner?.id).toBe("p2");
+      expect(game.hostId).toBe("p2");
+    });
   });
 
   describe("startGame", () => {
