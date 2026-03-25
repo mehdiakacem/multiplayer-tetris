@@ -71,6 +71,20 @@ describe("Game", () => {
       expect(player1.board).toEqual(createBoard());
       expect(player1.nextPieceIndex).toBe(1);
     });
+
+    test("winner is cleared when a new game starts", () => {
+      game.startGame("p1");
+      game.killPlayer("p1");
+
+      expect(game.winner?.id).toBe("p2");
+
+      game.startGame("p2");
+
+      expect(game.winner).toBeNull();
+      expect(game.getPublicState().winner).toBeNull();
+      expect(game.started).toBe(true);
+      expect(game.ended).toBe(false);
+    });
   });
 
   describe("spawnPieceForPlayer", () => {

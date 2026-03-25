@@ -159,7 +159,7 @@ export default class Game {
     this.started = true;
     this.ended = false;
 
-    this.winnerId = null;
+    this.winner = null;
 
     this.resetPlayers();
     this.resetBag();
