@@ -62,16 +62,18 @@ describe("Game", () => {
     test("players are reset on game start", () => {
       player1.pendingPenaltyLines = 3;
       player1.kill();
+      player1.nextPieceIndex = 4;
 
       game.startGame("p1");
 
       expect(player1.alive).toBe(true);
       expect(player1.pendingPenaltyLines).toBe(0);
       expect(player1.board).toEqual(createBoard());
+      expect(player1.nextPieceIndex).toBe(1);
     });
   });
 
-  describe("spawnPieceForAll", () => {
+  describe("spawnPieceForPlayer", () => {
     test("gives a piece to alive players", () => {
       game.startGame("p1");
 
@@ -127,16 +129,60 @@ describe("Game", () => {
 
   });
 
-  describe("getNextPiece and bag refill", () => {
-    test("refills bag when empty", () => {
+  describe("getPieceAt and bag refill", () => {
+    test("extends the shared sequence when needed", () => {
       game.bag = [];
-      game.bagIndex = 0;
 
-      const piece = game.getNextPiece();
+      const piece = game.getPieceAt(0);
 
       expect(game.bag.length).toBeGreaterThan(0);
-      expect(game.bagIndex).toBe(1);
+      expect(game.bag[0]).toBe(piece);
       expect(typeof piece).toBe("string");
+    });
+  });
+
+  describe("piece progression", () => {
+    test("locking one player's piece does not grow another player's queue", () => {
+      game.bag = ["I", "O", "T", "S", "Z", "J", "L"];
+      game.started = true;
+      game.ended = false;
+      game.resetPlayers();
+      game.spawnPieceForPlayer(player1);
+      game.spawnPieceForPlayer(player2);
+
+      const player2PieceBefore = player2.currentPiece;
+      expect(player2.queue).toEqual([]);
+
+      game.handleHardDrop(player1);
+
+      expect(player1.currentPiece).not.toBeNull();
+      expect(player2.currentPiece).toBe(player2PieceBefore);
+      expect(player2.queue).toEqual([]);
+    });
+
+    test("players consume the same piece order independently", () => {
+      game.bag = ["I", "O", "T", "S", "Z", "J", "L"];
+      game.started = true;
+      game.ended = false;
+      game.resetPlayers();
+
+      game.spawnPieceForPlayer(player1);
+      game.spawnPieceForPlayer(player2);
+
+      expect(player1.currentPiece.type).toBe("I");
+      expect(player2.currentPiece.type).toBe("I");
+
+      game.handleHardDrop(player1);
+      game.handleHardDrop(player1);
+
+      expect(player1.currentPiece.type).toBe("T");
+      expect(player2.currentPiece.type).toBe("I");
+      expect(player2.nextPieceIndex).toBe(1);
+
+      game.handleHardDrop(player2);
+
+      expect(player2.currentPiece.type).toBe("O");
+      expect(player2.nextPieceIndex).toBe(2);
     });
   });
 

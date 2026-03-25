@@ -17,6 +17,7 @@ describe("Player", () => {
 
     expect(player.currentPiece).toBe(null);
     expect(player.queue).toEqual([]);
+    expect(player.nextPieceIndex).toBe(0);
     expect(player.pendingPenaltyLines).toBe(0);
 
     // spectrum computed from board
@@ -93,6 +94,24 @@ describe("Player", () => {
     player.kill();
 
     expect(player.isAlive()).toBe(false);
+  });
+
+  test("reset restores gameplay state including piece progression", () => {
+    const player = new Player("1", "Player");
+
+    player.givePiece("S");
+    player.givePiece("Z");
+    player.nextPieceIndex = 3;
+    player.addPenaltyLines(2);
+    player.kill();
+
+    player.reset();
+
+    expect(player.alive).toBe(true);
+    expect(player.currentPiece).toBe(null);
+    expect(player.queue).toEqual([]);
+    expect(player.nextPieceIndex).toBe(0);
+    expect(player.pendingPenaltyLines).toBe(0);
   });
 
   test("toPublicData exposes only public info", () => {

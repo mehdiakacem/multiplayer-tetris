@@ -21,7 +21,6 @@ export default class Game {
     this.ended = false;
 
     this.bag = [];
-    this.bagIndex = 0;
   }
 
   computeMove(piece, action) {
@@ -61,7 +60,7 @@ export default class Game {
     player.setBoard(finalBoard);
 
     player.clearPiece();
-    this.spawnPieceForAll();
+    this.spawnPieceForPlayer(player);
 
     if (!isValidPosition(player.board, player.currentPiece)) {
       this.killPlayer(player.id);
@@ -101,22 +100,20 @@ export default class Game {
     }
   }
 
-  getNextPiece() {
-    if (this.bagIndex >= this.bag.length) {
-      this.bag = shuffle([...PIECE_TYPES]);
-      this.bagIndex = 0;
+  getPieceAt(index) {
+    while (index >= this.bag.length) {
+      this.bag.push(...shuffle([...PIECE_TYPES]));
     }
 
-    return this.bag[this.bagIndex++];
+    return this.bag[index];
   }
 
-  spawnPieceForAll() {
-    const type = this.getNextPiece();
-    this.players.forEach((player) => {
-      if (player.alive) {
-        player.givePiece(type);
-      }
-    });
+  spawnPieceForPlayer(player) {
+    if (!player.alive) return;
+
+    const type = this.getPieceAt(player.nextPieceIndex);
+    player.nextPieceIndex += 1;
+    player.givePiece(type);
   }
 
   addPlayer(player) {
@@ -166,7 +163,9 @@ export default class Game {
 
     this.resetPlayers();
     this.resetBag();
-    this.spawnPieceForAll();
+    this.players.forEach((player) => {
+      this.spawnPieceForPlayer(player);
+    });
 
     return true;
   }
@@ -183,8 +182,7 @@ export default class Game {
   }
 
   resetBag() {
-    this.bag = shuffle([...PIECE_TYPES]);
-    this.bagIndex = 0;
+    this.bag = [];
   }
 
   handleLineClear(clearingPlayerId, linesCleared) {

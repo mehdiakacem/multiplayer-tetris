@@ -11,6 +11,7 @@ export default class Player {
     this.board = createBoard();
     this.currentPiece = null;
     this.queue = [];
+    this.nextPieceIndex = 0;
 
     this.pendingPenaltyLines = 0;
     this.spectrum = computeSpectrum(this.board);
@@ -20,6 +21,7 @@ export default class Player {
     this.alive = true;
     this.pendingPenaltyLines = 0;
     this.queue = [];
+    this.nextPieceIndex = 0;
     this.clearPiece();
     this.setBoard(createBoard());
   }
