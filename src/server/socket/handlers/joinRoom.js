@@ -1,7 +1,16 @@
 import Player from "../../game/Player.js";
 
 export function handleJoinRoom({ socket, io, gameManager }) {
-  return ({ room, playerName }) => {
+  return (payload) => {
+    if (!isValidJoinPayload(payload)) {
+      socket.emit("join-denied", {
+        reason: "Invalid room or player name",
+      });
+      return;
+    }
+
+    const { room, playerName } = payload;
+
     if (room.length > 10 || playerName.length > 10) {
       socket.emit("join-denied", {
         reason: "Room and player names must be at most 10 characters long",
@@ -32,4 +41,15 @@ export function handleJoinRoom({ socket, io, gameManager }) {
       hostId: game.hostId,
     });
   };
+}
+
+function isValidJoinPayload(payload) {
+  return (
+    payload &&
+    typeof payload === "object" &&
+    typeof payload.room === "string" &&
+    typeof payload.playerName === "string" &&
+    payload.room.trim() !== "" &&
+    payload.playerName.trim() !== ""
+  );
 }

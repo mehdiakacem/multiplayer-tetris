@@ -2,6 +2,53 @@ import { describe, it, expect, vi } from "vitest";
 import { handleJoinRoom } from "../handlers/joinRoom";
 
 describe("handleJoinRoom", () => {
+  it("rejects a missing payload", () => {
+    const socket = {
+      id: "s1",
+      join: vi.fn(),
+      emit: vi.fn(),
+      data: {},
+    };
+
+    const io = { to: vi.fn() };
+    const gameManager = {
+      getOrCreateGame: vi.fn(),
+    };
+
+    handleJoinRoom({ socket, io, gameManager })(undefined);
+
+    expect(socket.emit).toHaveBeenCalledWith("join-denied", {
+      reason: "Invalid room or player name",
+    });
+    expect(gameManager.getOrCreateGame).not.toHaveBeenCalled();
+    expect(socket.join).not.toHaveBeenCalled();
+  });
+
+  it("rejects malformed payload fields", () => {
+    const socket = {
+      id: "s1",
+      join: vi.fn(),
+      emit: vi.fn(),
+      data: {},
+    };
+
+    const io = { to: vi.fn() };
+    const gameManager = {
+      getOrCreateGame: vi.fn(),
+    };
+
+    handleJoinRoom({ socket, io, gameManager })({
+      room: 42,
+      playerName: "",
+    });
+
+    expect(socket.emit).toHaveBeenCalledWith("join-denied", {
+      reason: "Invalid room or player name",
+    });
+    expect(gameManager.getOrCreateGame).not.toHaveBeenCalled();
+    expect(socket.join).not.toHaveBeenCalled();
+  });
+
   it("joins room and emits player-joined", () => {
     const socket = {
       id: "s1",
@@ -38,6 +85,34 @@ describe("handleJoinRoom", () => {
 });
 
 describe("handleJoinRoom - deny join", () => {
+  it("rejects empty room or player names", () => {
+    const socket = {
+      id: "s1",
+      join: vi.fn(),
+      emit: vi.fn(),
+      data: {},
+    };
+
+    const io = {
+      to: vi.fn(),
+    };
+
+    const gameManager = {
+      getOrCreateGame: vi.fn(),
+    };
+
+    handleJoinRoom({ socket, io, gameManager })({
+      room: "   ",
+      playerName: "Alice",
+    });
+
+    expect(socket.emit).toHaveBeenCalledWith("join-denied", {
+      reason: "Invalid room or player name",
+    });
+    expect(gameManager.getOrCreateGame).not.toHaveBeenCalled();
+    expect(socket.join).not.toHaveBeenCalled();
+  });
+
   it("emits join-denied if game already started", () => {
     const socket = {
       id: "s1",

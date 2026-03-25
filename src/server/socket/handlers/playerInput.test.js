@@ -38,6 +38,26 @@ describe("handlePlayerInput", () => {
     expect(emit).not.toHaveBeenCalled();
   });
 
+  it("does nothing if payload is missing", () => {
+    const handler = handlePlayerInput({ socket, io, gameManager });
+    handler(undefined);
+
+    expect(gameManager.getGame).not.toHaveBeenCalled();
+    expect(game.handleInput).not.toHaveBeenCalled();
+    expect(io.to).not.toHaveBeenCalled();
+    expect(emit).not.toHaveBeenCalled();
+  });
+
+  it("does nothing if action is not a non-empty string", () => {
+    const handler = handlePlayerInput({ socket, io, gameManager });
+    handler({ action: "   " });
+
+    expect(gameManager.getGame).not.toHaveBeenCalled();
+    expect(game.handleInput).not.toHaveBeenCalled();
+    expect(io.to).not.toHaveBeenCalled();
+    expect(emit).not.toHaveBeenCalled();
+  });
+
   it("does nothing if game does not exist", () => {
     gameManager.getGame = vi.fn(() => null);
 
