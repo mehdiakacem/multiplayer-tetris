@@ -7,6 +7,7 @@ import {
   playerPredictionChanged,
   reconcilePredictedPlayer,
 } from "../game/prediction";
+import { GAME_TICK_INTERVAL_MS } from "../../shared/gameTiming";
 
 export function useGameSocket({ room, playerName }) {
   const [opponents, setOpponents] = useState([]);
@@ -18,14 +19,26 @@ export function useGameSocket({ room, playerName }) {
   const optimisticPlayerRef = useRef(null);
   const nextActionIdRef = useRef(0);
   const lastAcknowledgedActionIdRef = useRef(0);
+  const playerRef = useRef(null);
+  const serverTickRef = useRef(0);
+  const gravityPredictedTickRef = useRef(0);
 
   // Create middleware instance (memoized)
   const middleware = useMemo(() => createGameSocketMiddleware(socket), []);
+
+  useEffect(() => {
+    playerRef.current = player;
+  }, [player]);
 
   const syncPlayerFromGameState = useCallback(
     (nextGame) => {
       const myId = middleware.getId();
       const authoritativePlayer = nextGame?.players?.find((p) => p.id === myId) ?? null;
+      serverTickRef.current = nextGame?.tick ?? serverTickRef.current;
+
+      if (gravityPredictedTickRef.current <= serverTickRef.current) {
+        gravityPredictedTickRef.current = 0;
+      }
 
       if (!authoritativePlayer) {
         pendingActionsRef.current = [];
@@ -43,11 +56,17 @@ export function useGameSocket({ room, playerName }) {
         pendingActionsRef.current,
       );
 
+      const displayedPlayer = gravityPredictedTickRef.current > serverTickRef.current
+        ? applyPredictedAction(reconciledPlayer.player, "down")
+        : reconciledPlayer.player;
+
       pendingActionsRef.current = reconciledPlayer.pendingActions;
-      optimisticPlayerRef.current = reconciledPlayer.pendingActions.length > 0
-        ? reconciledPlayer.player
+      optimisticPlayerRef.current =
+        reconciledPlayer.pendingActions.length > 0 ||
+        gravityPredictedTickRef.current > serverTickRef.current
+          ? displayedPlayer
         : null;
-      setPlayer(reconciledPlayer.player);
+      setPlayer(displayedPlayer);
 
       return authoritativePlayer;
     },
@@ -78,6 +97,34 @@ export function useGameSocket({ room, playerName }) {
   );
 
   useEffect(() => {
+    if (status !== GAME_STATUS.PLAYING) {
+      gravityPredictedTickRef.current = 0;
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      if (gravityPredictedTickRef.current > serverTickRef.current) {
+        return;
+      }
+
+      const basePlayer = optimisticPlayerRef.current ?? playerRef.current;
+      const nextPlayer = applyPredictedAction(basePlayer, "down");
+
+      if (!playerPredictionChanged(basePlayer, nextPlayer)) {
+        return;
+      }
+
+      gravityPredictedTickRef.current = serverTickRef.current + 1;
+      optimisticPlayerRef.current = nextPlayer;
+      setPlayer(nextPlayer);
+    }, GAME_TICK_INTERVAL_MS);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, [status]);
+
+  useEffect(() => {
     if (!room || !playerName) {
       return;
     }
@@ -87,11 +134,11 @@ export function useGameSocket({ room, playerName }) {
       return resolvedRoom === room;
     };
 
-    middleware.connect();
-
-    middleware.on("connect", () => {
+    const joinCurrentRoom = () => {
       middleware.joinRoom(room, playerName);
-    });
+    };
+
+    middleware.on("connect", joinCurrentRoom);
 
     middleware.on("player-joined", ({ room: eventRoom, players, hostId }) => {
       if (!isCurrentRoomEvent(eventRoom)) return;
@@ -131,6 +178,8 @@ export function useGameSocket({ room, playerName }) {
       optimisticPlayerRef.current = null;
       nextActionIdRef.current = 0;
       lastAcknowledgedActionIdRef.current = 0;
+      serverTickRef.current = game.tick ?? 0;
+      gravityPredictedTickRef.current = 0;
       setGame(game);
       syncPlayerFromGameState(game);
       setStatus(GAME_STATUS.PLAYING);
@@ -149,11 +198,19 @@ export function useGameSocket({ room, playerName }) {
       setHostId(game.hostId);
     });
 
+    if (middleware.isConnected()) {
+      joinCurrentRoom();
+    } else {
+      middleware.connect();
+    }
+
     return () => {
       pendingActionsRef.current = [];
       optimisticPlayerRef.current = null;
       nextActionIdRef.current = 0;
       lastAcknowledgedActionIdRef.current = 0;
+      serverTickRef.current = 0;
+      gravityPredictedTickRef.current = 0;
       middleware.cleanup();
       setOpponents([]);
       setHostId(null);

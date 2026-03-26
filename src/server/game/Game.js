@@ -19,6 +19,7 @@ export default class Game {
 
     this.started = false;
     this.ended = false;
+    this.tickCount = 0;
 
     this.bag = [];
   }
@@ -69,6 +70,8 @@ export default class Game {
 
   tick() {
     if (!this.started || this.ended) return;
+
+    this.tickCount += 1;
 
     this.players.forEach((player) => {
       if (!player.alive || !player.currentPiece) return;
@@ -158,6 +161,7 @@ export default class Game {
 
     this.started = true;
     this.ended = false;
+    this.tickCount = 0;
 
     this.winner = null;
 
@@ -225,6 +229,7 @@ export default class Game {
       room: this.room,
       started: this.started,
       ended: this.ended,
+      tick: this.tickCount,
       hostId: this.hostId,
       winner: this.winner,
       players: [...this.players.values()].map((p) => p.toPublicData()),

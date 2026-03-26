@@ -1,6 +1,7 @@
 import GameManager from "./game/GameManager.js";
 import { server, io } from "./server.js";
 import { registerSocketHandlers } from "./socket/registerSocketHandlers.js";
+import { GAME_TICK_INTERVAL_MS } from "../shared/gameTiming.js";
 
 const PORT = process.env.PORT || 3000;
 
@@ -23,4 +24,4 @@ setInterval(() => {
       });
     }
   });
-}, 700);
+}, GAME_TICK_INTERVAL_MS);

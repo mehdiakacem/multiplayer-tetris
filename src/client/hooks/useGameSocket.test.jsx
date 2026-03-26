@@ -1,6 +1,7 @@
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { useGameSocket } from "./useGameSocket";
+import { GAME_TICK_INTERVAL_MS } from "../../shared/gameTiming";
 
 const fakeMiddleware = {
   connect: vi.fn(),
@@ -32,6 +33,7 @@ function TestComponent({ room, playerName }) {
       <span data-testid="opponents">{opponents.map((player) => player.name).join(",")}</span>
       <span data-testid="game-room">{game?.room ?? "null"}</span>
       <span data-testid="player-x">{player?.currentPiece?.position?.x ?? "null"}</span>
+      <span data-testid="player-y">{player?.currentPiece?.position?.y ?? "null"}</span>
       <button onClick={() => sendPlayerInput("right")}>move-right</button>
     </div>
   );
@@ -40,12 +42,17 @@ function TestComponent({ room, playerName }) {
 describe("useGameSocket", () => {
   beforeEach(() => {
     fakeMiddleware.connect.mockClear();
+    fakeMiddleware.isConnected = vi.fn(() => false);
     fakeMiddleware.joinRoom.mockClear();
     fakeMiddleware.on.mockClear();
     fakeMiddleware.cleanup.mockClear();
     fakeMiddleware.getId.mockClear();
     fakeMiddleware.sendPlayerInput.mockClear();
     fakeMiddleware.getId.mockReturnValue("s1");
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   it("ignores room events that do not match the current route room", async () => {
@@ -67,6 +74,7 @@ describe("useGameSocket", () => {
       game: {
         room: "room-1",
         ended: false,
+        tick: 0,
         hostId: "s1",
         players: [{ id: "s1", alive: true }],
       },
@@ -77,6 +85,7 @@ describe("useGameSocket", () => {
       game: {
         room: "room-1",
         ended: false,
+        tick: 0,
         hostId: "s1",
         players: [{ id: "s1", alive: true }],
       },
@@ -88,7 +97,17 @@ describe("useGameSocket", () => {
       expect(screen.getByTestId("opponents")).toHaveTextContent("");
       expect(screen.getByTestId("game-room")).toHaveTextContent("null");
       expect(screen.getByTestId("player-x")).toHaveTextContent("null");
+      expect(screen.getByTestId("player-y")).toHaveTextContent("null");
     });
+  });
+
+  it("joins immediately if the socket is already connected", () => {
+    fakeMiddleware.isConnected.mockReturnValue(true);
+
+    render(<TestComponent room="room-1" playerName="Alice" />);
+
+    expect(fakeMiddleware.connect).not.toHaveBeenCalled();
+    expect(fakeMiddleware.joinRoom).toHaveBeenCalledWith("room-1", "Alice");
   });
 
   it("keeps local movement responsive while authoritative snapshots catch up", async () => {
@@ -104,6 +123,7 @@ describe("useGameSocket", () => {
         game: {
           room: "room-1",
           ended: false,
+          tick: 0,
           hostId: "s1",
           players: [
             {
@@ -156,6 +176,7 @@ describe("useGameSocket", () => {
         game: {
           room: "room-1",
           ended: false,
+          tick: 1,
           hostId: "s1",
           players: [
             {
@@ -200,6 +221,7 @@ describe("useGameSocket", () => {
         game: {
           room: "room-1",
           ended: false,
+          tick: 2,
           hostId: "s1",
           players: [
             {
@@ -232,5 +254,82 @@ describe("useGameSocket", () => {
     await waitFor(() => {
       expect(screen.getByTestId("player-x")).toHaveTextContent("6");
     });
+  });
+
+  it("predicts one gravity step locally when the next server tick is late", async () => {
+    vi.useFakeTimers();
+    render(<TestComponent room="room-1" playerName="Alice" />);
+
+    const handlers = new Map(
+      fakeMiddleware.on.mock.calls.map(([event, handler]) => [event, handler]),
+    );
+
+    act(() => {
+      handlers.get("game-started")({
+        room: "room-1",
+        game: {
+          room: "room-1",
+          ended: false,
+          tick: 0,
+          hostId: "s1",
+          players: [
+            {
+              id: "s1",
+              alive: true,
+              board: Array.from({ length: 20 }, () => Array(10).fill(0)),
+              currentPiece: {
+                type: "T",
+                rotation: 0,
+                position: { x: 4, y: 0 },
+                matrix: [
+                  [0, 1, 0],
+                  [1, 1, 1],
+                  [0, 0, 0],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(GAME_TICK_INTERVAL_MS);
+    });
+
+    expect(screen.getByTestId("player-x")).toHaveTextContent("4");
+    expect(screen.getByTestId("player-y")).toHaveTextContent("1");
+
+    act(() => {
+      handlers.get("game-state")({
+        room: "room-1",
+        game: {
+          room: "room-1",
+          ended: false,
+          tick: 1,
+          hostId: "s1",
+          players: [
+            {
+              id: "s1",
+              alive: true,
+              board: Array.from({ length: 20 }, () => Array(10).fill(0)),
+              currentPiece: {
+                type: "T",
+                rotation: 0,
+                position: { x: 4, y: 1 },
+                matrix: [
+                  [0, 1, 0],
+                  [1, 1, 1],
+                  [0, 0, 0],
+                ],
+              },
+            },
+          ],
+        },
+      });
+    });
+
+    expect(screen.getByTestId("player-x")).toHaveTextContent("4");
+    expect(screen.getByTestId("player-y")).toHaveTextContent("1");
   });
 });
