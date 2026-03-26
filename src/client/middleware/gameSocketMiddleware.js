@@ -9,8 +9,12 @@ export function createGameSocketMiddleware(socket) {
     socket.emit("start-game");
   };
 
-  const sendPlayerInput = (action) => {
-    socket.emit("player-input", { action });
+  const sendPlayerInput = (action, clientActionId) => {
+    const payload = { action };
+    if (typeof clientActionId === "number") {
+      payload.clientActionId = clientActionId;
+    }
+    socket.emit("player-input", payload);
   };
 
   /**

@@ -56,6 +56,15 @@ describe("gameSocketMiddleware - Basic Tests", () => {
     });
   });
 
+  it("should send player input with client action id when provided", () => {
+    middleware.sendPlayerInput("left", 42);
+
+    expect(fakeSocket.emit).toHaveBeenCalledWith("player-input", {
+      action: "left",
+      clientActionId: 42,
+    });
+  });
+
   // TEST 4: Can we listen to events?
   it("should register event listener when on is called", () => {
     // Create a fake callback function

@@ -8,6 +8,7 @@ describe("handlePlayerInput", () => {
     socket = {
       id: "s1",
       data: { room: "room-1" },
+      emit: vi.fn(),
     };
 
     emit = vi.fn();
@@ -85,15 +86,24 @@ describe("handlePlayerInput", () => {
     game.getPublicState = vi.fn(() => ({ ok: true }));
 
     const handler = handlePlayerInput({ socket, io, gameManager });
-    handler({ action: "LEFT" });
+    handler({ action: "LEFT", clientActionId: 7 });
 
     expect(gameManager.getGame).toHaveBeenCalledWith("room-1");
     expect(game.handleInput).toHaveBeenCalledWith("s1", "LEFT");
+    expect(socket.emit).toHaveBeenCalledWith("input-ack", { actionId: 7 });
 
     expect(io.to).toHaveBeenCalledWith("room-1");
     expect(emit).toHaveBeenCalledWith("game-state", {
       room: "room-1",
       game: { ok: true },
     });
+  });
+
+  it("rejects non-integer client action ids", () => {
+    const handler = handlePlayerInput({ socket, io, gameManager });
+    handler({ action: "LEFT", clientActionId: 1.5 });
+
+    expect(gameManager.getGame).not.toHaveBeenCalled();
+    expect(socket.emit).not.toHaveBeenCalled();
   });
 });

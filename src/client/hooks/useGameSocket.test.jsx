@@ -142,9 +142,13 @@ describe("useGameSocket", () => {
       fireEvent.click(screen.getByText("move-right"));
     });
 
-    expect(fakeMiddleware.sendPlayerInput).toHaveBeenNthCalledWith(1, "right");
-    expect(fakeMiddleware.sendPlayerInput).toHaveBeenNthCalledWith(2, "right");
+    expect(fakeMiddleware.sendPlayerInput).toHaveBeenNthCalledWith(1, "right", 1);
+    expect(fakeMiddleware.sendPlayerInput).toHaveBeenNthCalledWith(2, "right", 2);
     expect(screen.getByTestId("player-x")).toHaveTextContent("6");
+
+    act(() => {
+      handlers.get("input-ack")({ actionId: 1 });
+    });
 
     act(() => {
       handlers.get("game-state")({
@@ -184,6 +188,10 @@ describe("useGameSocket", () => {
     await waitFor(() => {
       expect(screen.getByTestId("player-x")).toHaveTextContent("6");
       expect(screen.getByTestId("opponents")).toHaveTextContent("Bob");
+    });
+
+    act(() => {
+      handlers.get("input-ack")({ actionId: 2 });
     });
 
     act(() => {

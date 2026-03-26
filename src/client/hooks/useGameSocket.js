@@ -16,6 +16,8 @@ export function useGameSocket({ room, playerName }) {
   const [status, setStatus] = useState(null);
   const pendingActionsRef = useRef([]);
   const optimisticPlayerRef = useRef(null);
+  const nextActionIdRef = useRef(0);
+  const lastAcknowledgedActionIdRef = useRef(0);
 
   // Create middleware instance (memoized)
   const middleware = useMemo(() => createGameSocketMiddleware(socket), []);
@@ -32,10 +34,13 @@ export function useGameSocket({ room, playerName }) {
         return null;
       }
 
+      pendingActionsRef.current = pendingActionsRef.current.filter(
+        (pendingAction) => pendingAction.id > lastAcknowledgedActionIdRef.current,
+      );
+
       const reconciledPlayer = reconcilePredictedPlayer(
         authoritativePlayer,
         pendingActionsRef.current,
-        optimisticPlayerRef.current,
       );
 
       pendingActionsRef.current = reconciledPlayer.pendingActions;
@@ -55,9 +60,16 @@ export function useGameSocket({ room, playerName }) {
       const nextPlayer = applyPredictedAction(basePlayer, action);
 
       if (playerPredictionChanged(basePlayer, nextPlayer)) {
-        pendingActionsRef.current = [...pendingActionsRef.current, action];
+        const actionId = nextActionIdRef.current + 1;
+        nextActionIdRef.current = actionId;
+        pendingActionsRef.current = [
+          ...pendingActionsRef.current,
+          { id: actionId, action },
+        ];
         optimisticPlayerRef.current = nextPlayer;
         setPlayer(nextPlayer);
+        middleware.sendPlayerInput(action, actionId);
+        return;
       }
 
       middleware.sendPlayerInput(action);
@@ -96,6 +108,17 @@ export function useGameSocket({ room, playerName }) {
       }
     });
 
+    middleware.on("input-ack", ({ actionId }) => {
+      if (typeof actionId !== "number") return;
+      lastAcknowledgedActionIdRef.current = Math.max(
+        lastAcknowledgedActionIdRef.current,
+        actionId,
+      );
+      pendingActionsRef.current = pendingActionsRef.current.filter(
+        (pendingAction) => pendingAction.id > lastAcknowledgedActionIdRef.current,
+      );
+    });
+
     middleware.on("player-left", ({ room: eventRoom, id, hostId }) => {
       if (!isCurrentRoomEvent(eventRoom)) return;
       setOpponents((prev) => prev.filter((p) => p.id !== id));
@@ -106,6 +129,8 @@ export function useGameSocket({ room, playerName }) {
       if (!isCurrentRoomEvent(eventRoom, game?.room)) return;
       pendingActionsRef.current = [];
       optimisticPlayerRef.current = null;
+      nextActionIdRef.current = 0;
+      lastAcknowledgedActionIdRef.current = 0;
       setGame(game);
       syncPlayerFromGameState(game);
       setStatus(GAME_STATUS.PLAYING);
@@ -127,6 +152,8 @@ export function useGameSocket({ room, playerName }) {
     return () => {
       pendingActionsRef.current = [];
       optimisticPlayerRef.current = null;
+      nextActionIdRef.current = 0;
+      lastAcknowledgedActionIdRef.current = 0;
       middleware.cleanup();
       setOpponents([]);
       setHostId(null);

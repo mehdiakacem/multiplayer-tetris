@@ -74,43 +74,25 @@ describe("prediction helpers", () => {
 
   it("reconciles pending inputs against newer authoritative snapshots", () => {
     const authoritativePlayer = createPlayer();
-    const pendingActions = ["right", "right"];
+    const pendingActions = [
+      { id: 1, action: "right" },
+      { id: 2, action: "right" },
+    ];
     const optimisticPlayer = applyPredictedActions(
       authoritativePlayer,
-      pendingActions,
+      pendingActions.map((pendingAction) => pendingAction.action),
     );
 
     const nextAuthoritativePlayer = applyPredictedAction(
       authoritativePlayer,
       "right",
     );
-    const reconciled = reconcilePredictedPlayer(
-      nextAuthoritativePlayer,
-      pendingActions,
-      optimisticPlayer,
-    );
+    const reconciled = reconcilePredictedPlayer(nextAuthoritativePlayer, [
+      pendingActions[1],
+    ]);
 
-    expect(reconciled.pendingActions).toEqual(["right"]);
+    expect(reconciled.pendingActions).toEqual([pendingActions[1]]);
     expect(reconciled.player.currentPiece.position.x).toBe(6);
-  });
-
-  it("clears optimistic state when the server snapshot diverges", () => {
-    const authoritativePlayer = createPlayer();
-    const optimisticPlayer = applyPredictedAction(authoritativePlayer, "right");
-    const divergentPlayer = createPlayer({
-      currentPiece: {
-        ...authoritativePlayer.currentPiece,
-        position: { x: 1, y: 5 },
-      },
-    });
-
-    const reconciled = reconcilePredictedPlayer(
-      divergentPlayer,
-      ["right"],
-      optimisticPlayer,
-    );
-
-    expect(reconciled.pendingActions).toEqual([]);
-    expect(reconciled.player.currentPiece.position).toEqual({ x: 1, y: 5 });
+    expect(optimisticPlayer.currentPiece.position.x).toBe(6);
   });
 });

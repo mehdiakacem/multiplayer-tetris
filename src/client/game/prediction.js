@@ -36,11 +36,7 @@ export function applyPredictedActions(player, actions) {
   );
 }
 
-export function reconcilePredictedPlayer(
-  authoritativePlayer,
-  pendingActions,
-  optimisticPlayer,
-) {
+export function reconcilePredictedPlayer(authoritativePlayer, pendingActions) {
   if (!authoritativePlayer) {
     return {
       player: null,
@@ -48,31 +44,19 @@ export function reconcilePredictedPlayer(
     };
   }
 
-  if (!optimisticPlayer || pendingActions.length === 0) {
+  if (pendingActions.length === 0) {
     return {
       player: authoritativePlayer,
       pendingActions: [],
     };
   }
 
-  for (let dropCount = 0; dropCount <= pendingActions.length; dropCount += 1) {
-    const remainingActions = pendingActions.slice(dropCount);
-    const candidatePlayer = applyPredictedActions(
-      authoritativePlayer,
-      remainingActions,
-    );
-
-    if (piecesEqual(candidatePlayer?.currentPiece, optimisticPlayer.currentPiece)) {
-      return {
-        player: remainingActions.length > 0 ? candidatePlayer : authoritativePlayer,
-        pendingActions: remainingActions,
-      };
-    }
-  }
-
   return {
-    player: authoritativePlayer,
-    pendingActions: [],
+    player: applyPredictedActions(
+      authoritativePlayer,
+      pendingActions.map((pendingAction) => pendingAction.action),
+    ),
+    pendingActions,
   };
 }
 
