@@ -6,13 +6,15 @@ describe("handleJoinRoom", () => {
     const socket = {
       id: "s1",
       join: vi.fn(),
+      leave: vi.fn(),
       emit: vi.fn(),
       data: {},
     };
 
     const io = { to: vi.fn() };
     const gameManager = {
-      getOrCreateGame: vi.fn(),
+      getGame: vi.fn(),
+      createGame: vi.fn(),
     };
 
     handleJoinRoom({ socket, io, gameManager })(undefined);
@@ -20,7 +22,7 @@ describe("handleJoinRoom", () => {
     expect(socket.emit).toHaveBeenCalledWith("join-denied", {
       reason: "Invalid room or player name",
     });
-    expect(gameManager.getOrCreateGame).not.toHaveBeenCalled();
+    expect(gameManager.createGame).not.toHaveBeenCalled();
     expect(socket.join).not.toHaveBeenCalled();
   });
 
@@ -28,13 +30,15 @@ describe("handleJoinRoom", () => {
     const socket = {
       id: "s1",
       join: vi.fn(),
+      leave: vi.fn(),
       emit: vi.fn(),
       data: {},
     };
 
     const io = { to: vi.fn() };
     const gameManager = {
-      getOrCreateGame: vi.fn(),
+      getGame: vi.fn(),
+      createGame: vi.fn(),
     };
 
     handleJoinRoom({ socket, io, gameManager })({
@@ -45,7 +49,7 @@ describe("handleJoinRoom", () => {
     expect(socket.emit).toHaveBeenCalledWith("join-denied", {
       reason: "Invalid room or player name",
     });
-    expect(gameManager.getOrCreateGame).not.toHaveBeenCalled();
+    expect(gameManager.createGame).not.toHaveBeenCalled();
     expect(socket.join).not.toHaveBeenCalled();
   });
 
@@ -53,6 +57,7 @@ describe("handleJoinRoom", () => {
     const socket = {
       id: "s1",
       join: vi.fn(),
+      leave: vi.fn(),
       emit: vi.fn(),
       data: {},
     };
@@ -70,7 +75,8 @@ describe("handleJoinRoom", () => {
     };
 
     const gameManager = {
-      getOrCreateGame: vi.fn(() => game),
+      getGame: vi.fn(() => undefined),
+      createGame: vi.fn(() => game),
     };
 
     handleJoinRoom({ socket, io, gameManager })({
@@ -80,7 +86,76 @@ describe("handleJoinRoom", () => {
 
     expect(socket.join).toHaveBeenCalledWith("room-1");
     expect(socket.data.room).toBe("room-1");
-    expect(emit).toHaveBeenCalled();
+    expect(emit).toHaveBeenCalledWith("player-joined", {
+      room: "room-1",
+      players: [{ id: "s1", name: "Alice" }],
+      hostId: "s1",
+    });
+  });
+
+  it("leaves the previous room and removes the socket from its old game before joining a new room", () => {
+    const socket = {
+      id: "s1",
+      join: vi.fn(),
+      leave: vi.fn(),
+      emit: vi.fn(),
+      data: { room: "room-1" },
+    };
+
+    const emitOldRoom = vi.fn();
+    const emitNewRoom = vi.fn();
+    const io = {
+      to: vi.fn((room) => {
+        if (room === "room-1") return { emit: emitOldRoom };
+        if (room === "room-2") return { emit: emitNewRoom };
+        return { emit: vi.fn() };
+      }),
+    };
+
+    const oldGame = {
+      room: "room-1",
+      hostId: "s2",
+      started: false,
+      ended: false,
+      handlePlayerDisconnect: vi.fn(() => true),
+      isEmpty: vi.fn(() => false),
+    };
+
+    const newGame = {
+      room: "room-2",
+      started: false,
+      hostId: "s1",
+      addPlayer: vi.fn(),
+      getPublicState: () => ({
+        players: [{ id: "s1", name: "Alice" }],
+      }),
+    };
+
+    const gameManager = {
+      getGame: vi.fn((room) => (room === "room-1" ? oldGame : undefined)),
+      createGame: vi.fn(() => newGame),
+      removeGame: vi.fn(),
+    };
+
+    handleJoinRoom({ socket, io, gameManager })({
+      room: "room-2",
+      playerName: "Alice",
+    });
+
+    expect(socket.leave).toHaveBeenCalledWith("room-1");
+    expect(oldGame.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
+    expect(emitOldRoom).toHaveBeenCalledWith("player-left", {
+      room: "room-1",
+      id: "s1",
+      hostId: "s2",
+    });
+    expect(socket.join).toHaveBeenCalledWith("room-2");
+    expect(socket.data.room).toBe("room-2");
+    expect(emitNewRoom).toHaveBeenCalledWith("player-joined", {
+      room: "room-2",
+      players: [{ id: "s1", name: "Alice" }],
+      hostId: "s1",
+    });
   });
 });
 
@@ -89,6 +164,7 @@ describe("handleJoinRoom - deny join", () => {
     const socket = {
       id: "s1",
       join: vi.fn(),
+      leave: vi.fn(),
       emit: vi.fn(),
       data: {},
     };
@@ -98,7 +174,8 @@ describe("handleJoinRoom - deny join", () => {
     };
 
     const gameManager = {
-      getOrCreateGame: vi.fn(),
+      getGame: vi.fn(),
+      createGame: vi.fn(),
     };
 
     handleJoinRoom({ socket, io, gameManager })({
@@ -109,7 +186,7 @@ describe("handleJoinRoom - deny join", () => {
     expect(socket.emit).toHaveBeenCalledWith("join-denied", {
       reason: "Invalid room or player name",
     });
-    expect(gameManager.getOrCreateGame).not.toHaveBeenCalled();
+    expect(gameManager.createGame).not.toHaveBeenCalled();
     expect(socket.join).not.toHaveBeenCalled();
   });
 
@@ -117,6 +194,7 @@ describe("handleJoinRoom - deny join", () => {
     const socket = {
       id: "s1",
       join: vi.fn(),
+      leave: vi.fn(),
       emit: vi.fn(),
       data: {},
     };
@@ -130,7 +208,8 @@ describe("handleJoinRoom - deny join", () => {
     };
 
     const gameManager = {
-      getOrCreateGame: vi.fn(() => game),
+      getGame: vi.fn(() => game),
+      createGame: vi.fn(),
     };
 
     handleJoinRoom({ socket, io, gameManager })({

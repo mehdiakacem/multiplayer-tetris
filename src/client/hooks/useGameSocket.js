@@ -20,13 +20,19 @@ export function useGameSocket({ room, playerName }) {
       return;
     }
 
+    const isCurrentRoomEvent = (eventRoom, gameRoom) => {
+      const resolvedRoom = eventRoom ?? gameRoom;
+      return resolvedRoom === room;
+    };
+
     middleware.connect();
 
     middleware.on("connect", () => {
       middleware.joinRoom(room, playerName);
     });
 
-    middleware.on("player-joined", ({ players, hostId }) => {
+    middleware.on("player-joined", ({ room: eventRoom, players, hostId }) => {
+      if (!isCurrentRoomEvent(eventRoom)) return;
       setOpponents(players.filter((p) => p.id !== middleware.getId()));
       setHostId(hostId);
       setStatus(GAME_STATUS.WAITING);
@@ -40,17 +46,20 @@ export function useGameSocket({ room, playerName }) {
       }
     });
 
-    middleware.on("player-left", ({ id, hostId }) => {
+    middleware.on("player-left", ({ room: eventRoom, id, hostId }) => {
+      if (!isCurrentRoomEvent(eventRoom)) return;
       setOpponents((prev) => prev.filter((p) => p.id !== id));
       setHostId(hostId);
     });
 
-    middleware.on("game-started", ({ game }) => {
+    middleware.on("game-started", ({ room: eventRoom, game }) => {
+      if (!isCurrentRoomEvent(eventRoom, game?.room)) return;
       setGame(game);
       setStatus(GAME_STATUS.PLAYING);
     });
 
-    middleware.on("game-state", ({ game }) => {
+    middleware.on("game-state", ({ room: eventRoom, game }) => {
+      if (!isCurrentRoomEvent(eventRoom, game?.room)) return;
       setGame(game);
       const me = game.players.find((p) => p.id === middleware.getId());
       if (!me) return;

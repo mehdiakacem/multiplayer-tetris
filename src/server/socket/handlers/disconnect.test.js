@@ -5,7 +5,7 @@ describe("handleDisconnect", () => {
   let socket, io, emit, gameManager;
 
   beforeEach(() => {
-    socket = { id: "s1" };
+    socket = { id: "s1", leave: vi.fn(), data: { room: "room-a" } };
 
     emit = vi.fn();
     io = {
@@ -13,25 +13,17 @@ describe("handleDisconnect", () => {
     };
 
     gameManager = {
-      getAllGames: vi.fn(() => []),
+      getGame: vi.fn(() => null),
       removeGame: vi.fn(),
     };
   });
 
   it("does nothing if socket is not in any game", () => {
-    const gameA = {
-      room: "room-a",
-      hostId: "h1",
-      handlePlayerDisconnect: vi.fn(() => false),
-      isEmpty: vi.fn(() => false),
-    };
-
-    gameManager.getAllGames = vi.fn(() => [gameA]);
-
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
 
-    expect(gameA.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
+    expect(socket.leave).toHaveBeenCalledWith("room-a");
+    expect(gameManager.getGame).toHaveBeenCalledWith("room-a");
     expect(io.to).not.toHaveBeenCalled();
     expect(emit).not.toHaveBeenCalled();
     expect(gameManager.removeGame).not.toHaveBeenCalled();
@@ -47,7 +39,7 @@ describe("handleDisconnect", () => {
       isEmpty: vi.fn(() => false),
     };
 
-    gameManager.getAllGames = vi.fn(() => [gameA]);
+    gameManager.getGame = vi.fn(() => gameA);
 
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
@@ -56,6 +48,7 @@ describe("handleDisconnect", () => {
 
     expect(io.to).toHaveBeenCalledWith("room-a");
     expect(emit).toHaveBeenCalledWith("player-left", {
+      room: "room-a",
       id: "s1",
       hostId: "h1",
     });
@@ -73,53 +66,13 @@ describe("handleDisconnect", () => {
       isEmpty: vi.fn(() => true), // 👈 empty now
     };
 
-    gameManager.getAllGames = vi.fn(() => [gameA]);
+    gameManager.getGame = vi.fn(() => gameA);
 
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
 
     expect(gameA.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
     expect(gameManager.removeGame).toHaveBeenCalledWith("room-a");
-  });
-
-  it("handles multiple games containing the socket id", () => {
-    const emitA = vi.fn();
-    const emitB = vi.fn();
-
-    io.to = vi.fn((room) => {
-      if (room === "room-a") return { emit: emitA };
-      if (room === "room-b") return { emit: emitB };
-      return { emit: vi.fn() };
-    });
-
-    const gameA = {
-      room: "room-a",
-      hostId: "h1",
-      started: false,
-      ended: false,
-      handlePlayerDisconnect: vi.fn(() => true),
-      isEmpty: vi.fn(() => false),
-    };
-
-    const gameB = {
-      room: "room-b",
-      hostId: "h2",
-      started: false,
-      ended: false,
-      handlePlayerDisconnect: vi.fn(() => true),
-      isEmpty: vi.fn(() => false),
-    };
-
-    gameManager.getAllGames = vi.fn(() => [gameA, gameB]);
-
-    const handler = handleDisconnect({ socket, io, gameManager });
-    handler();
-
-    expect(gameA.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
-    expect(gameB.handlePlayerDisconnect).toHaveBeenCalledWith("s1");
-
-    expect(emitA).toHaveBeenCalledWith("player-left", { id: "s1", hostId: "h1" });
-    expect(emitB).toHaveBeenCalledWith("player-left", { id: "s1", hostId: "h2" });
   });
 
   it("emits updated game-state when a disconnect ends an active game", () => {
@@ -146,16 +99,18 @@ describe("handleDisconnect", () => {
       isEmpty: vi.fn(() => false),
     };
 
-    gameManager.getAllGames = vi.fn(() => [gameA]);
+    gameManager.getGame = vi.fn(() => gameA);
 
     const handler = handleDisconnect({ socket, io, gameManager });
     handler();
 
     expect(emitRoomA).toHaveBeenNthCalledWith(1, "player-left", {
+      room: "room-a",
       id: "s1",
       hostId: "s2",
     });
     expect(emitRoomA).toHaveBeenNthCalledWith(2, "game-state", {
+      room: "room-a",
       game: publicState,
     });
   });

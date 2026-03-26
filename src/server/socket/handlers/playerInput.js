@@ -13,6 +13,7 @@ export function handlePlayerInput({ socket, io, gameManager }) {
     game.handleInput(socket.id, action);
 
     io.to(room).emit("game-state", {
+      room,
       game: game.getPublicState(),
     });
   };

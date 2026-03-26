@@ -10,6 +10,7 @@ export function handleStartGame({ socket, io, gameManager }) {
     if (!started) return;
 
     io.to(room).emit("game-started", {
+      room,
       game: game.getPublicState(),
     });
   };

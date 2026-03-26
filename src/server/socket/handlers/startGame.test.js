@@ -69,6 +69,7 @@ describe("handleStartGame", () => {
 
     expect(io.to).toHaveBeenCalledWith("room-1");
     expect(emit).toHaveBeenCalledWith("game-started", {
+      room: "room-1",
       game: { ok: true },
     });
   });

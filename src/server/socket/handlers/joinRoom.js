@@ -17,14 +17,19 @@ export function handleJoinRoom({ socket, io, gameManager }) {
       });
       return;
     }
-    const game = gameManager.getOrCreateGame(room);
 
-    if (game.started) {
+    const existingGame = gameManager.getGame(room);
+
+    if (existingGame?.started) {
       socket.emit("join-denied", {
         reason: "Game already started",
       });
       return;
     }
+
+    leaveCurrentRoom({ socket, io, gameManager, nextRoom: room });
+
+    const game = existingGame ?? gameManager.createGame(room);
 
     socket.join(room);
     socket.data.room = room;
@@ -37,10 +42,46 @@ export function handleJoinRoom({ socket, io, gameManager }) {
       .players.map((p) => ({ id: p.id, name: p.name }));
 
     io.to(room).emit("player-joined", {
+      room,
       players,
       hostId: game.hostId,
     });
   };
+}
+
+export function leaveCurrentRoom({ socket, io, gameManager, nextRoom = null }) {
+  const currentRoom = socket.data.room;
+  if (!currentRoom || currentRoom === nextRoom) return;
+
+  const game = gameManager.getGame(currentRoom);
+
+  socket.leave(currentRoom);
+  socket.data.room = undefined;
+
+  if (!game) return;
+
+  const wasRemoved = game.handlePlayerDisconnect
+    ? game.handlePlayerDisconnect(socket.id)
+    : false;
+
+  if (!wasRemoved) return;
+
+  io.to(currentRoom).emit("player-left", {
+    room: currentRoom,
+    id: socket.id,
+    hostId: game.hostId,
+  });
+
+  if (game.started || game.ended) {
+    io.to(currentRoom).emit("game-state", {
+      room: currentRoom,
+      game: game.getPublicState(),
+    });
+  }
+
+  if (game.isEmpty()) {
+    gameManager.removeGame(currentRoom);
+  }
 }
 
 function isValidJoinPayload(payload) {

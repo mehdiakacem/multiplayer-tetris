@@ -92,6 +92,7 @@ describe("handlePlayerInput", () => {
 
     expect(io.to).toHaveBeenCalledWith("room-1");
     expect(emit).toHaveBeenCalledWith("game-state", {
+      room: "room-1",
       game: { ok: true },
     });
   });
