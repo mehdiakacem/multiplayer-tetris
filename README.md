@@ -43,12 +43,18 @@ The app reads these variables:
 
 - `PORT`: Express server port. Default: `3000`
 - `CLIENT_URL`: allowed browser origin for Socket.IO CORS. Default: `http://localhost:5173`
-- `VITE_SOCKET_SERVER_URL`: Socket.IO server URL used by the Vite client. Default: `http://localhost:3000`
+- `VITE_SOCKET_SERVER_URL`: optional Socket.IO server URL used by the Vite client. Leave it unset when the client and server are deployed on the same origin.
 
 The default local setup uses:
 
 - Client origin: `http://localhost:5173`
 - Server URL: `http://localhost:3000`
+
+For production:
+
+- If Express serves the built frontend, do not set `VITE_SOCKET_SERVER_URL`; the client will connect back to the same origin automatically.
+- If the frontend and server are deployed on different origins, set `VITE_SOCKET_SERVER_URL` to the public server URL and set `CLIENT_URL` to the public frontend URL.
+- On Render, if `CLIENT_URL` is not set, the server falls back to Render's `RENDER_EXTERNAL_URL`.
 
 ### Run the app
 
@@ -64,6 +70,29 @@ Or run them separately:
 npm run dev:client
 npm run dev:server
 ```
+
+### Deploy
+
+Build the frontend, then start the Node server:
+
+```bash
+npm ci
+npm run build:client
+npm run start:server
+```
+
+### Deploy on Render
+
+This repo includes [`render.yaml`](/home/mehdi/Desktop/multiplayer-tetris/render.yaml) for a single Render web service.
+
+1. Push the repository to GitHub.
+2. In Render, create a new Blueprint and select this repository.
+3. Render will use:
+   - Build command: `npm ci && npm run build:client`
+   - Start command: `npm run start:server`
+   - Node version: `20.19.0`
+4. Leave `VITE_SOCKET_SERVER_URL` unset when deploying this as one service on Render.
+5. Add `CLIENT_URL` only if you later move the frontend to a different origin.
 
 ## Available Scripts
 

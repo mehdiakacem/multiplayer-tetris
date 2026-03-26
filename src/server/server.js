@@ -5,7 +5,10 @@ import path from "path";
 
 const app = express();
 const server = http.createServer(app);
-const corsOrigin = process.env.CLIENT_URL || "http://localhost:5173";
+const corsOrigin =
+  process.env.CLIENT_URL ||
+  process.env.RENDER_EXTERNAL_URL ||
+  "http://localhost:5173";
 
 const io = new Server(server, {
   cors: {
