@@ -10,7 +10,7 @@ export default function App() {
   const { room, playerName } = useParams();
   const navigate = useNavigate();
 
-  const { middleware, game, opponents, hostId, status } = useGameSocket({
+  const { middleware, game, opponents, hostId, player, sendPlayerInput, status } = useGameSocket({
     room,
     playerName,
   });
@@ -19,7 +19,7 @@ export default function App() {
   const isHost = !!socketId && socketId === hostId;
 
   useKeyboardInput({
-    onInput: (action) => middleware?.sendPlayerInput(action),
+    onInput: sendPlayerInput,
     onEscape: () => navigate("/"),
   });
 
@@ -28,7 +28,6 @@ export default function App() {
     [middleware],
   );
 
-  const player = game?.players?.find((p) => p.id === socketId);
   return (
     <div className="app">
       <Header
