@@ -9,10 +9,10 @@ const Header = ({ roomName, status, isHost, onStart }) => {
       <Link to="/" className="logoGroup">
         <div className="logo">
           <div className="rtLogo" aria-label="Red Tetris">
-            <span className="rtLogo__text">RT</span>
+            <span className="rtLogo__text">MT</span>
           </div>
         </div>
-        <span className="brandName">Red Tetris</span>
+        <span className="brandName">Multiplayer Tetris</span>
       </Link>
 
       {/* CENTER: Room Info */}
